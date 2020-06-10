@@ -9,10 +9,30 @@ spec:
       labels:
         app: mssql
     spec:
+      securityContext:
+        fsGroup: 10001
       terminationGracePeriodSeconds: 10
+      initContainers:
+        - name: sql-backup
+          image: kecoacr.azurecr.io/wwi-mssql2019-ubuntu16.04:1.0
+          command: 
+            - sh
+            - -c
+          args:
+            -  |
+              if [ -z "$(ls -A /data)" ]; then
+                echo "MSSQL volume empty.  Copying backup."
+                cp -r /var/opt/mssql/data/ /data
+                echo "Backup data copied"
+              else
+                echo "MSSQL volume not empty.  Skipping backup."
+              fi
+          volumeMounts:
+            - name: mssqldb
+              mountPath: /data
       containers:
         - name: mssql
-          image: kecoacr.azurecr.io/wwi-mssql2019-ubuntu16.04:1.0
+          image: mcr.microsoft.com/mssql/server:2019-CU2-ubuntu-16.04
           ports:
             - containerPort: 1433
           env:
