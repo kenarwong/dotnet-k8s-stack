@@ -14,18 +14,18 @@ spec:
       terminationGracePeriodSeconds: 10
       initContainers:
         - name: sql-backup
-          image: kecoacr.azurecr.io/wwi-mssql2019-ubuntu16.04:1.0
+          image: kecoacr.azurecr.io/adventureworks-mssql2019-ubuntu16.04:1.0
           command: 
             - sh
             - -c
           args:
             -  |
-              if [ -z "$(ls -A /data)" ]; then
-                echo "MSSQL volume empty.  Copying backup."
+              if [ ! -d "/data/data" ]; then
+                echo "MSSQL data doesn't exist.  Copying backup."
                 cp -r /var/opt/mssql/data/ /data
                 echo "Backup data copied"
               else
-                echo "MSSQL volume not empty.  Skipping backup."
+                echo "MSSQL data exists.  Skipping backup."
               fi
           volumeMounts:
             - name: mssqldb
