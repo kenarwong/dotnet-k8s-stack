@@ -1,13 +1,22 @@
-apiVersion: apps/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: mssql-deployment
+  labels:
+    app.kubernetes.io/name: mssql-deployment
+    app.kubernetes.io/part-of: adventureworks
+    app.kubernetes.io/component: data
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: mssql
   template:
     metadata:
       labels:
-        app: mssql
+        app.kubernetes.io/name: mssql
+        app.kubernetes.io/part-of: adventureworks
+        app.kubernetes.io/component: data
     spec:
       securityContext:
         fsGroup: 10001
@@ -15,6 +24,7 @@ spec:
       initContainers:
         - name: sql-backup
           image: kecoacr.azurecr.io/adventureworks-mssql2019-ubuntu16.04:1.0
+          imagePullPolicy: Always
           command: 
             - sh
             - -c
@@ -56,11 +66,14 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: mssql-deployment
+  name: mssql-service
+  labels:
+    app.kubernetes.io/name: mssql-service
+    app.kubernetes.io/part-of: adventureworks
+    app.kubernetes.io/component: data
 spec:
-  #type: LoadBalancer
   selector:
-    app: mssql
+    app.kubernetes.io/name: mssql
   ports:
     - protocol: TCP
       port: 1433
