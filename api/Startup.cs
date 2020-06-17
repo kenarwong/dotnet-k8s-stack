@@ -31,6 +31,16 @@ namespace api
 
             services.AddDbContext<AdventureWorks2017Context>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("AdventureWorks")));
+
+
+            services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(
+                    builder =>
+                    {
+                        builder.AllowAnyOrigin();
+                    });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -42,6 +52,8 @@ namespace api
             }
 
             // app.UseHttpsRedirection();
+
+            app.UseCors();
 
             app.UseRouting();
 

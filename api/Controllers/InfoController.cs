@@ -17,7 +17,7 @@ namespace api.Controllers
         public Info GetInfo()
         {
             return new Info {
-                AppEnvironment = Environment.GetEnvironmentVariable("APPENVIRONMENT"),
+                AppEnvironment = Environment.GetEnvironmentVariable("APP_ENVIRONMENT"),
                 AppHost = Environment.GetEnvironmentVariable("HOSTNAME")
             };
         }

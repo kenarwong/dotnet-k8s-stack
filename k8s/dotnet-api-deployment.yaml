@@ -38,7 +38,7 @@ spec:
           ports:
             - containerPort: 80
           env:
-            - name: APPENVIRONMENT
+            - name: APP_ENVIRONMENT
               value: dev
           volumeMounts:
             - name: appsettings
