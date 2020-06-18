@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dotnet-app-deployment
+  labels:
+    app.kubernetes.io/name: dotnet-app-deployment
+    app.kubernetes.io/part-of: adventureworks
+    app.kubernetes.io/component: app
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: dotnet-app
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: dotnet-app
+        app.kubernetes.io/part-of: adventureworks
+        app.kubernetes.io/component: app
+    spec:
+      initContainers:
+        - name: check-dotnet-api-service
+          image: busybox
+          command: 
+            - sh
+            - -c
+          args:
+            - |
+              until nslookup dotnet-api-service;
+              do
+                echo "Waiting for dotnet-api-service";
+                sleep 2;
+              done
+      containers:
+        - name: dotnet-app
+          image: kecoacr.azurecr.io/adventureworks-app-dotnet3.1:1.0
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+          env:
+            - name: APP_ENVIRONMENT
+              value: dev
+          envFrom:
+            - configMapRef:
+                name: app-env-config
+              #    volumeMounts:
+              #      - name: appsettings
+              #        mountPath: /app/settings
+              #volumes:
+              #  - name: appsettings
+              #    secret:
+              #      secretName: app-appsettings
+          lifecycle:
+            postStart:
+              exec:
+                command:
+                  - sh
+                  - -c
+                  - |
+                    apt-get update && apt-get install gettext-base
+                    envsubst < /app/ClientApp/dist/env.template.js > /app/ClientApp/dist/env.js
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dotnet-app-service
+  labels:
+    app.kubernetes.io/name: dotnet-app-service
+    app.kubernetes.io/part-of: adventureworks
+    app.kubernetes.io/component: app
+spec:
+  type: LoadBalancer
+  selector:
+    app.kubernetes.io/name: dotnet-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
