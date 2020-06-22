@@ -1,0 +1,21 @@
+<h1>Product</h1>
+<p *ngIf="!products"><em>Loading...</em></p>
+
+<table class='table table-striped' aria-labelledby="tableLabel" *ngIf="products">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Name</th>
+      <th>Number</th>
+      <th>List Price</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let product of products">
+      <td>{{ product.productId }}</td>
+      <td>{{ product.name }}</td>
+      <td>{{ product.productNumber }}</td>
+      <td>{{ product.listPrice }}</td>
+    </tr>
+  </tbody>
+</table>

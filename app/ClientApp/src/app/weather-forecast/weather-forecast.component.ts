@@ -4,17 +4,16 @@ import { HttpClient } from '@angular/common/http';
 import { EnvService } from '../service/env.service';
 
 @Component({
-  selector: 'app-fetch-data',
-  templateUrl: './fetch-data.component.html'
+  selector: 'app-weather-forecast',
+  templateUrl: './weather-forecast.component.html'
 })
-export class FetchDataComponent {
+export class WeatherForecastComponent {
   public forecasts: WeatherForecast[];
 
   constructor(
     http: HttpClient,
     private env: EnvService
   ) {
-    //http.get<WeatherForecast[]>(baseUrl + 'weatherforecast').subscribe(result => {
     http.get<WeatherForecast[]>(env.apiUrl + 'weatherforecast').subscribe(result => {
       this.forecasts = result;
     }, error => console.error(error));

@@ -4,7 +4,7 @@ namespace api.Model
 {
     public class Info
     {
-        public string AppEnvironment { get; set; }
-        public string AppHost { get; set; }
+        public string ApiEnvironment { get; set; }
+        public string Hostname { get; set; }
     }
 }

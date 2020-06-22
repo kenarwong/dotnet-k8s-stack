@@ -8,7 +8,9 @@ import { AppComponent } from './app.component';
 import { NavMenuComponent } from './nav-menu/nav-menu.component';
 import { HomeComponent } from './home/home.component';
 import { CounterComponent } from './counter/counter.component';
-import { FetchDataComponent } from './fetch-data/fetch-data.component';
+import { ApiInfoComponent } from './api-info/api-info.component';
+import { WeatherForecastComponent } from './weather-forecast/weather-forecast.component';
+import { ProductComponent } from './product/product.component';
 
 import { EnvServiceProvider } from './provider/env.service.provider';
 
@@ -18,7 +20,9 @@ import { EnvServiceProvider } from './provider/env.service.provider';
     NavMenuComponent,
     HomeComponent,
     CounterComponent,
-    FetchDataComponent
+    ApiInfoComponent,
+    WeatherForecastComponent,
+    ProductComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -27,8 +31,9 @@ import { EnvServiceProvider } from './provider/env.service.provider';
     RouterModule.forRoot([
       { path: '', component: HomeComponent, pathMatch: 'full' },
       { path: 'counter', component: CounterComponent },
-      { path: 'api-info', component: CounterComponent },
-      { path: 'fetch-data', component: FetchDataComponent },
+      { path: 'api-info', component: ApiInfoComponent },
+      { path: 'weather-forecast', component: WeatherForecastComponent },
+      { path: 'product', component: ProductComponent },
     ])
   ],
   providers: [EnvServiceProvider],
