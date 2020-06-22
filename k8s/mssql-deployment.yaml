@@ -23,7 +23,7 @@ spec:
       terminationGracePeriodSeconds: 10
       initContainers:
         - name: sql-backup
-          image: kecoacr.azurecr.io/adventureworks-mssql2019-ubuntu16.04:1.0
+          image: kecoacr.azurecr.io/adventureworks-mssql2019-ubuntu16.04-backup-only:1.0
           imagePullPolicy: Always
           command: 
             - sh
