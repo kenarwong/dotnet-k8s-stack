@@ -8,6 +8,6 @@
   },
   "AllowedHosts": "*",
   "ConnectionStrings": {
-    "AdventureWorks": "Server=mssql-service;Database=AdventureWorks2017;User=SA;Password=MyC0m9l&xP@ssw0rd"
+    "AdventureWorks": "Server=mssql-service;Database=AdventureWorks2017;User=WebApiLogin;Password=?8d5EbDU~j{_Ea]"
   }
 }

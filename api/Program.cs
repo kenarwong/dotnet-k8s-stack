@@ -20,6 +20,11 @@ namespace api
             Host.CreateDefaultBuilder(args)
                 .ConfigureAppConfiguration((hostingContext, config) =>
                 {
+                    if (hostingContext.HostingEnvironment.IsDevelopment())
+                    {
+                        config.AddUserSecrets<Program>();
+                    }
+
                     config.AddJsonFile("settings/appsettings.json", 
                         optional: true, 
                         reloadOnChange: true);
