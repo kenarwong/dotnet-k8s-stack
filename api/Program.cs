@@ -20,14 +20,19 @@ namespace api
             Host.CreateDefaultBuilder(args)
                 .ConfigureAppConfiguration((hostingContext, config) =>
                 {
-                    if (hostingContext.HostingEnvironment.IsDevelopment())
-                    {
-                        config.AddUserSecrets<Program>();
-                    }
-
+                    // Set app settings first.
+                    // Following configuration settings will overwrite
                     config.AddJsonFile("settings/appsettings.json", 
                         optional: true, 
                         reloadOnChange: true);
+
+                    // Set connection string with user secrets or environmental variable
+                    if (hostingContext.HostingEnvironment.IsDevelopment())
+                    {
+                        config.AddUserSecrets<Program>();
+                    } else {
+                        config.AddEnvironmentVariables(prefix: "API_CONFIG_");
+                    }
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {

@@ -37,9 +37,14 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 80
+          envFrom:
+            - secretRef: 
+                name: mssql-login
           env:
             - name: APP_ENVIRONMENT
               value: dev
+            - name: API_CONFIG_ConnectionStrings__AdventureWorks
+              value: Server=mssql-service;Database=AdventureWorks2017;User=$(WEB_API_LOGIN);Password=$(WEB_API_LOGIN_PASSWORD)
           volumeMounts:
             - name: appsettings
               mountPath: /app/settings

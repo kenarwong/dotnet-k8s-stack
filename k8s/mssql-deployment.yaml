@@ -50,11 +50,9 @@ spec:
               value: "Developer"
             - name: ACCEPT_EULA
               value: "Y"
-            - name: SA_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: mssql
-                  key: SA_PASSWORD 
+          envFrom:
+            - secretRef:
+                name: mssql-login
           volumeMounts:
             - name: mssqldb
               mountPath: /var/opt/mssql
@@ -65,17 +63,17 @@ spec:
                   - sh
                   - -c
                   - |
-                    LOGIN_EXISTS=$(/opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P "$SA_PASSWORD" -Q "SELECT sp.name FROM sys.server_principals sp LEFT JOIN sys.sql_logins sl ON sp.principal_id = sl.principal_id WHERE sp.name = 'WebApiLogin'" | grep "WebApiLogin")
+                    LOGIN_EXISTS=$(/opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P "$SA_PASSWORD" -Q "SELECT sp.name FROM sys.server_principals sp LEFT JOIN sys.sql_logins sl ON sp.principal_id = sl.principal_id WHERE sp.name = '$WEB_API_LOGIN'" | grep "$WEB_API_LOGIN")
                     if [ -z "$LOGIN_EXISTS" ]; then
                       echo "Login doesn't exist.  Creating login."
-                      /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P "$SA_PASSWORD" -Q "CREATE LOGIN WebApiLogin WITH PASSWORD = '?8d5EbDU~j{_Ea]'"
+                      /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P "$SA_PASSWORD" -Q "CREATE LOGIN $WEB_API_LOGIN WITH PASSWORD = '$WEB_API_LOGIN_PASSWORD'"
                       /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P "$SA_PASSWORD" -Q "
                       Use AdventureWorks2017;
                       GO
-                      IF NOT EXISTS (SELECT * FROM sys.database_principals WHERE name = N'WebApiUser')
+                      IF NOT EXISTS (SELECT * FROM sys.database_principals WHERE name = N'$WEB_API_LOGIN_USER')
                       BEGIN
-                          CREATE USER WebApiUser FOR LOGIN WebApiLogin
-                          EXEC sp_addrolemember N'db_owner', N'WebApiUser'
+                          CREATE USER $WEB_API_LOGIN_USER FOR LOGIN $WEB_API_LOGIN
+                          EXEC sp_addrolemember N'db_owner', N'$WEB_API_LOGIN_USER'
                       END;
                       GO"
                       echo "Login created."

@@ -6,8 +6,5 @@
       "Microsoft.Hosting.Lifetime": "Information"
     }
   },
-  "AllowedHosts": "*",
-  "ConnectionStrings": {
-    "AdventureWorks": "Server=mssql-service;Database=AdventureWorks2017;User=WebApiLogin;Password=?8d5EbDU~j{_Ea]"
-  }
+  "AllowedHosts": "*"
 }
