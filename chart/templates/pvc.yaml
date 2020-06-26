@@ -3,6 +3,7 @@ kind: PersistentVolumeClaim
 metadata:
   name: {{ .Values.pvc.name }}
   labels:
+    helm.sh/resource-policy: keep
     app.kubernetes.io/name: {{ .Values.pvc.name }}
     app.kubernetes.io/part-of: {{ .Release.Name }}
 spec:
