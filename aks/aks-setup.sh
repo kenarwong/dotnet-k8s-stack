@@ -19,3 +19,6 @@ az aks get-credentials -g $GROUPNAME -n $CLUSTERNAME --overwrite
 # Create static public IP
 CLUSTER_RESOURCE_GROUP=$(az aks show  -g k-eco -n k-cluster --query nodeResourceGroup -o tsv)
 PUBLIC_IP=$(az network public-ip create --resource-group $CLUSTER_RESOURCE_GROUP --name k-cluster-public-ip --sku Standard --allocation-method static --query publicIp.ipAddress -o tsv)
+
+# Create DNS zone
+#PUBLIC_IP_ID=$(az network public-ip list --query "[?ipAddress=='$PUBLIC_IP'].id" -o tsv)

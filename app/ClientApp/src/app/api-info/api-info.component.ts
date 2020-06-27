@@ -2,6 +2,7 @@ import { Component, Inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
 import { EnvService } from '../service/env.service';
+import { ApiInfo } from '../model/apiInfo';
 
 @Component({
   selector: 'app-api-info',
@@ -18,9 +19,4 @@ export class ApiInfoComponent {
       this.apiInfo = result;
     }, error => console.error(error));
   }
-}
-
-interface ApiInfo {
-  apiEnvironment: string;
-  hostname: string;
 }

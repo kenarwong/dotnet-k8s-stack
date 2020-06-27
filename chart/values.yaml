@@ -16,7 +16,7 @@ nginx-ingress:
 ingress:
   name: nginx-ingress
   class: nginx
-  WEB_API_HOST: k-cluster-ingress.eastus.cloudapp.azure.com
+  DOMAIN_NAME: kenrhwang.com
 
 data:
   deployment:
