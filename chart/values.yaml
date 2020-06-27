@@ -1,5 +1,23 @@
 environment: dev
 
+nginx-ingress:
+  controller:
+    replicaCount: 2
+    nodeSelector: 
+      beta.kubernetes.io/os: linux
+    service:
+      annotations:
+        service.beta.kubernetes.io/azure-dns-label-name: k-cluster-ingress
+      loadBalancerIP: 52.191.100.217
+  defaultBackend:
+    nodeSelector:
+      beta.kubernetes.io/os: linux
+
+ingress:
+  name: nginx-ingress
+  class: nginx
+  WEB_API_HOST: k-cluster-ingress.eastus.cloudapp.azure.com
+
 data:
   deployment:
     name: mssql-deployment
@@ -75,8 +93,6 @@ app:
         containerPort: 80
   configMap:
     name: app-env-config
-    values:
-      appEnvConfig: 
   service:
     name: dotnet-app-service
     port: 80

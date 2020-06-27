@@ -62,7 +62,6 @@ metadata:
     app.kubernetes.io/part-of: {{ .Release.Name }}
     app.kubernetes.io/component: api
 spec:
-  type: LoadBalancer
   selector:
     app.kubernetes.io/name: {{ .Values.api.deployment.pod.name }}
   ports:
