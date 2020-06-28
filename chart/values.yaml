@@ -25,7 +25,7 @@ data:
       name: mssql
       securityContext:
         fsGroup: 10001
-      initContainer:
+      sqlBackupContainer:
         image:
           name: kecoacr.azurecr.io/adventureworks2017-mssql2019-ubuntu16.04-backup-only:1.0
           pullPolicy: Always
@@ -47,6 +47,18 @@ data:
     database:
       name: AdventureWorks2017
       mssqlPath: /var/opt/mssql
+
+postInstall:
+  name: login-setup
+  image:
+    name: mcr.microsoft.com/mssql-tools
+
+sc:
+  name: default
+  #name: azure-disk-custom
+  provisioner: kubernetes.io/azure-disk
+  storageAccountType: StandardSSD_LRS
+  reclaimPolicy: Retain
 
 pvc:
   name: mssql-data

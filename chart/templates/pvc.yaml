@@ -9,7 +9,7 @@ metadata:
 spec:
   accessModes:
     - ReadWriteOnce
-  storageClassName: default
+  storageClassName: {{ .Values.sc.name }}
   resources:
     requests:
       storage: {{ .Values.pvc.storage }}
