@@ -26,7 +26,7 @@ jobs:
         ACRNAME: kecocr
       uses: azure/CLI@v1
       with:
-        azcliversion: 2.4
+        azcliversion: 2.8.0
         inlineScript: |
           chmod +x $GITHUB_WORKSPACE/azure/azure-setup.sh
           $GITHUB_WORKSPACE/azure/azure-setup.sh -g $GROUP_NAME -l $LOCATION -n $CLUSTER_NAME --domain-name $DOMAIN_NAME --acr-name $ACRNAME

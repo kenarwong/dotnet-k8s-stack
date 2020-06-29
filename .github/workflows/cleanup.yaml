@@ -33,7 +33,7 @@ jobs:
           GROUP_NAME: k-eco
         uses: azure/CLI@v1
         with:
-          azcliversion: 2.4
+          azcliversion: 2.8.0
           inlineScript: |
             chmod +x $GITHUB_WORKSPACE/azure/azure-cleanup.sh
             $GITHUB_WORKSPACE/azure/azure-cleanup.sh -g $GROUP_NAME
