@@ -1,13 +1,12 @@
-name: CI
+name: infrastructure
 
 on:
   push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+    branches:
+      - master
 
 jobs:
-  infra:
+  azure:
     runs-on: ubuntu-latest
     
     steps:
@@ -19,9 +18,15 @@ jobs:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
         
     - name: Azure CLI script file
+      env:
+        GROUP_NAME: k-eco
+        LOCATION: eastus
+        CLUSTER_NAME: k-cluster
+        DOMAIN_NAME: ${{ secrets.PUBLIC_DOMAIN_NAME }}
+        ACRNAME: kecocr
       uses: azure/CLI@v1
       with:
         azcliversion: 2.4
         inlineScript: |
           chmod +x $GITHUB_WORKSPACE/azure/azure-setup.sh
-          $GITHUB_WORKSPACE/azure/azure-setup.sh
+          $GITHUB_WORKSPACE/azure/azure-setup.sh -g $GROUP_NAME -l $LOCATION -n $CLUSTER_NAME --domain-name $DOMAIN_NAME --acr-name $ACRNAME
