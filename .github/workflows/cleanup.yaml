@@ -23,17 +23,17 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-    - name: 'Login via Azure CLI'
-      uses: azure/login@v1
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
+      - name: 'Login via Azure CLI'
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
-    - name: Azure CLI script file
-      env:
-        GROUP_NAME: k-eco
-      uses: azure/CLI@v1
-      with:
-        azcliversion: 2.4
-        inlineScript: |
-          chmod +x $GITHUB_WORKSPACE/azure/azure-cleanup.sh
-          $GITHUB_WORKSPACE/azure/azure-cleanup.sh -g $GROUP_NAME
+      - name: Azure CLI script file
+        env:
+          GROUP_NAME: k-eco
+        uses: azure/CLI@v1
+        with:
+          azcliversion: 2.4
+          inlineScript: |
+            chmod +x $GITHUB_WORKSPACE/azure/azure-cleanup.sh
+            $GITHUB_WORKSPACE/azure/azure-cleanup.sh -g $GROUP_NAME
