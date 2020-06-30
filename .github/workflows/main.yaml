@@ -71,6 +71,6 @@ jobs:
     - name: Terraform Apply
       id: apply
       run: |
-        terraform apply \
-          -var "resource_group_name=$GROUP_NAME"
+        terraform apply --auto-approve \
+          -var "resource_group_name=$GROUP_NAME" \
           -var "location=$LOCATION"
