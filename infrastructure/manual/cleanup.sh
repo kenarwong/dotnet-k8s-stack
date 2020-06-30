@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# azure-cleanup
+# cleanup
 # A script to cleanup Azure infrastructure resources
 # The following resources are removed:
 # - Resource group
@@ -12,8 +12,8 @@
 usage()
 {
     cat << EOF
-usage: azure-setup [-h --help] [--debug]
-                   -g --resource-group 
+usage: cleanup [-h --help] [--debug]
+               -g --resource-group 
 EOF
 }
 

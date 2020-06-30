@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# azure-setup 
+# setup 
 # A script to setup Azure infrastructure resources required for dotnet-k8s-stack
 # Provisions the following:
 # - Resource group
@@ -23,13 +23,13 @@
 usage()
 {
     cat << EOF
-usage: azure-setup [-h --help] [--debug]
-                   -g --resource-group 
-                   -l --location
-                   -n --name
-                   --domain-name
-                   --acr-name 
-                   [-c --node-count]
+usage: setup [-h --help] [--debug]
+             -g --resource-group 
+             -l --location
+             -n --name
+             --domain-name
+             --acr-name 
+             [-c --node-count]
 EOF
 }
 
