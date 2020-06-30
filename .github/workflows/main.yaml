@@ -15,7 +15,6 @@ jobs:
       STORAGE_ACCOUNT_NAME: kecoterraform
       STORAGE_CONTAINER_NAME: terraform
       STORAGE_CONTAINER_KEY: terraform.tfstate
-      AZ_CLI_SCRIPTS_DIRECTORY: $GITHUB_WORKSPACE/infrastructure/azure
     defaults:
       run:
         working-directory: $GITHUB_WORKSPACE/infrastructure/terraform
@@ -37,8 +36,8 @@ jobs:
       with:
         azcliversion: 2.8.0
         inlineScript: |
-          chmod +x $AZ_CLI_SCRIPTS_DIRECTORY/setup-terraform-backend.sh
-          $AZ_CLI_SCRIPTS_DIRECTORY/setup-terraform-backend.sh -g $TERRAFORM_BACKEND_GROUP_NAME -l $LOCATION --storage-account-name $STORAGE_ACCOUNT_NAME --storage-container-name $STORAGE_ACCOUNT_NAME
+          chmod +x $GITHUB_WORKSPACE/infrastructure/azure/setup-terraform-backend.sh
+          $GITHUB_WORKSPACE/infrastructure/azure/setup-terraform-backend.sh -g $TERRAFORM_BACKEND_GROUP_NAME -l $LOCATION --storage-account-name $STORAGE_ACCOUNT_NAME --storage-container-name $STORAGE_ACCOUNT_NAME
           echo "::set-output name=storage_account_key::$(az storage account create keys list -g $TERRAFORM_BACKEND_GROUP_NAME -n $STORAGE_ACCOUNT_NAME)"
 
     - name: Terraform fmt
