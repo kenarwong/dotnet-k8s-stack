@@ -38,12 +38,10 @@ jobs:
         inlineScript: |
           chmod +x $GITHUB_WORKSPACE/infrastructure/azure/setup-terraform-backend.sh
           $GITHUB_WORKSPACE/infrastructure/azure/setup-terraform-backend.sh -g $TERRAFORM_BACKEND_GROUP_NAME -l $LOCATION --storage-account-name $STORAGE_ACCOUNT_NAME --storage-container-name $STORAGE_ACCOUNT_NAME
-          KEY=$(az storage account keys list -g $TERRAFORM_BACKEND_GROUP_NAME -n $STORAGE_ACCOUNT_NAME)
-          echo "::set-output name=storage_account_key::$(jq -nR '$KEY' | jq -r .[0])"
+          echo "::set-output name=storage_account_key::$(jq -nR '$(az storage account keys list -g $TERRAFORM_BACKEND_GROUP_NAME -n $STORAGE_ACCOUNT_NAME)' | jq -r .[0])"
 
     - run: |
-        echo $PWD
-        echo ${{ steps.setup_terraform_backend.outputs.storage_account_key }}
+        echo $PWD && echo ${{ steps.setup_terraform_backend.outputs.storage_account_key }}
 
     - name: Terraform fmt
       id: fmt
