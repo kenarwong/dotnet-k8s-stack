@@ -101,7 +101,7 @@ if [ "$DEBUG" = "1" ]; then
   echo "Creating storage account..."
 fi
 
-az storage account create -n $STORAGE_ACCOUNT_NAME -g $GROUP_NAME -l $LOCATION --sku $STORAGE_ACCOUNT_NAME
+az storage account create -n $STORAGE_ACCOUNT_NAME -g $GROUP_NAME -l $LOCATION --sku $STORAGE_ACCOUNT_SKU
 
 if [ $? -ne 0 ]; then
   exit 1
