@@ -4,7 +4,7 @@ terraform {
     features {}
   }
 }
-  
+
 ## Azure resource provider ##
 provider "azurerm" {
   version = "=2.16.0"

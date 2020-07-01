@@ -72,7 +72,7 @@ jobs:
       - name: 'terraform plan'
         id: plan
         run: |
-          terraform plan -no-color
+          terraform plan -no-color \
             -var "resource_group_name=$GROUP_NAME" \
             -var "location=$LOCATION"
       
