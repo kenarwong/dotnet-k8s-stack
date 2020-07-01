@@ -76,13 +76,6 @@ jobs:
             -var "resource_group_name=$GROUP_NAME" \
             -var "location=$LOCATION"
       
-      - name: 'terraform plan error' 
-        run: echo ${{ steps.plan.outputs.stderr }}
-      - name: 'terraform plan output' 
-        run: echo ${{ steps.plan.outputs.stdout }}
-      - name: 'terraform plan exitcode' 
-        run: echo ${{ steps.plan.outputs.exitcode }}
-
       - name: 'terraform apply'
         id: apply
         run: |
