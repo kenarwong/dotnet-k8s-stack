@@ -36,7 +36,7 @@ jobs:
             chmod +x $GITHUB_WORKSPACE/infrastructure/azure/setup-terraform-backend.sh
             $GITHUB_WORKSPACE/infrastructure/azure/setup-terraform-backend.sh -g $TERRAFORM_BACKEND_GROUP_NAME -l $LOCATION --storage-account-name $STORAGE_ACCOUNT_NAME --storage-container-name $STORAGE_ACCOUNT_NAME
             KEY=$(az storage account keys list -g $TERRAFORM_BACKEND_GROUP_NAME -n $STORAGE_ACCOUNT_NAME)
-            echo "::set-output name=storage_account_key::$(jq -nR "$KEY" | jq -r .[0])" > /dev/null 2>&1
+            echo "::set-output name=storage_account_key::$(jq -nR "$KEY" | jq -r .[0].value)" > /dev/null 2>&1
 
   terraform:
     needs: backend
