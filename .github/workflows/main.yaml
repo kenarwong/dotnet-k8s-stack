@@ -65,22 +65,25 @@ jobs:
             -backend-config="container_name=$STORAGE_CONTAINER_NAME" \
             -backend-config="key=$STORAGE_CONTAINER_KEY" \
       
-      #- name: 'terraform validate'
-      #  id: validate
-      #  run: terraform validate -no-color
-      #
-      #- name: terraform Plan
-      #  id: plan
-      #  run: terraform plan -no-color
-      #  continue-on-error: true
-      #
-      #- run: echo ${{ steps.plan.outputs.stdout }}
-      #- run: echo ${{ steps.plan.outputs.stderr }}
-      #- run: echo ${{ steps.plan.outputs.exitcode }}
+      - name: 'terraform validate'
+        id: validate
+        run: terraform validate -no-color
+      
+      - name: 'terraform plan'
+        id: plan
+        run: terraform plan -no-color
+      
+      - name: 'terraform plan error' 
+        run: echo ${{ steps.plan.outputs.stderr }}
+        if: ${{ failure() }}
+      - name: 'terraform plan output' 
+      - run: echo ${{ steps.plan.outputs.stdout }}
+      - name: 'terraform plan exitcode' 
+      - run: echo ${{ steps.plan.outputs.exitcode }}
 
-      #- name: 'terraform apply'
-      #  id: apply
-      #  run: |
-      #    terraform apply --auto-approve \
-      #      -var "resource_group_name=$GROUP_NAME" \
-      #      -var "location=$LOCATION"
+      - name: 'terraform apply'
+        id: apply
+        run: |
+          terraform apply --auto-approve \
+            -var "resource_group_name=$GROUP_NAME" \
+            -var "location=$LOCATION"
