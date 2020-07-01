@@ -17,9 +17,10 @@ jobs:
       STORAGE_CONTAINER_KEY: terraform.tfstate
     
     steps:
+      - uses: actions/checkout@v2
+
       - run: ls .
-      #
-      #- uses: actions/checkout@v2
+      
       #- uses: hashicorp/setup-terraform@v1
       #  with:
       #    terraform_version: 0.12.28
