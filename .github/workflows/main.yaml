@@ -16,8 +16,6 @@ env:
 jobs:
   backend:
     runs-on: ubuntu-latest
-    outputs:
-      storage_account_key: ${{ steps.setup_terraform_backend.outputs.storage_acount_key }}
     
     steps:
       - uses: actions/checkout@v2
@@ -35,8 +33,8 @@ jobs:
           inlineScript: |
             chmod +x $GITHUB_WORKSPACE/infrastructure/azure/setup-terraform-backend.sh
             $GITHUB_WORKSPACE/infrastructure/azure/setup-terraform-backend.sh -g $TERRAFORM_BACKEND_GROUP_NAME -l $LOCATION --storage-account-name $STORAGE_ACCOUNT_NAME --storage-container-name $STORAGE_ACCOUNT_NAME
-            KEY=$(az storage account keys list -g $TERRAFORM_BACKEND_GROUP_NAME -n $STORAGE_ACCOUNT_NAME)
-            echo "::set-output name=storage_account_key::$(jq -nR "$KEY" | jq -r .[0])"
+            #KEY=$(az storage account keys list -g $TERRAFORM_BACKEND_GROUP_NAME -n $STORAGE_ACCOUNT_NAME)
+            #echo "::set-output name=storage_account_key::$(jq -nR "$KEY" | jq -r .[0])"
 
   terraform:
     needs: backend
@@ -60,16 +58,16 @@ jobs:
         run: terraform fmt
         continue-on-error: true
       
-      - run: echo ${{ needs.backend.outputs.storage_account_key }}
+        #- run: echo ${{ needs.backend.outputs.storage_account_key }}
 
       - name: 'terraform init'
         id: init
         run: |
           terraform init \
+            -backend-config="resource_group_name=$TERRAFORM_BACKEND_GROUP_NAME" \
             -backend-config="storage_account_name=$STORAGE_ACCOUNT_NAME" \
             -backend-config="container_name=$STORAGE_CONTAINER_NAME" \
             -backend-config="key=$STORAGE_CONTAINER_KEY" \
-            -backend-config="access_key=${{ needs.backend.outputs.storage_account_key }}"
       
       #- name: 'terraform validate'
       #  id: validate
