@@ -17,38 +17,37 @@ jobs:
       STORAGE_CONTAINER_KEY: terraform.tfstate
     defaults:
       run:
-        working-directory: $GITHUB_WORKSPACE/infrastructure/terraform
+        working-directory: ./infrastructure/terraform
     
     steps:
       - uses: actions/checkout@v2
       - uses: hashicorp/setup-terraform@v1
         with:
           terraform_version: 0.12.28
+      
+      - name: 'Login via Azure CLI'
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      
+      - name: 'Azure CLI script file'
+        id: setup_terraform_backend
+        uses: azure/CLI@v1
+        with:
+          azcliversion: 2.8.0
+          inlineScript: |
+            chmod +x $GITHUB_WORKSPACE/infrastructure/azure/setup-terraform-backend.sh
+            $GITHUB_WORKSPACE/infrastructure/azure/setup-terraform-backend.sh -g $TERRAFORM_BACKEND_GROUP_NAME -l $LOCATION --storage-account-name $STORAGE_ACCOUNT_NAME --storage-container-name $STORAGE_ACCOUNT_NAME
+            KEY=$(az storage account keys list -g $TERRAFORM_BACKEND_GROUP_NAME -n $STORAGE_ACCOUNT_NAME)
+            echo "::set-output name=storage_account_key::$(jq -nR "$KEY" | jq -r .[0])" > /dev/null 2>&1
 
       - run: echo $PWD 
       
-      #
-      #- name: 'Login via Azure CLI'
-      #  uses: azure/login@v1
-      #  with:
-      #    creds: ${{ secrets.AZURE_CREDENTIALS }}
-      #
-      #- name: Azure CLI script file
-      #  id: setup_terraform_backend
-      #  uses: azure/CLI@v1
-      #  with:
-      #    azcliversion: 2.8.0
-      #    inlineScript: |
-      #      chmod +x $GITHUB_WORKSPACE/infrastructure/azure/setup-terraform-backend.sh
-      #      $GITHUB_WORKSPACE/infrastructure/azure/setup-terraform-backend.sh -g $TERRAFORM_BACKEND_GROUP_NAME -l $LOCATION --storage-account-name $STORAGE_ACCOUNT_NAME --storage-container-name $STORAGE_ACCOUNT_NAME
-      #      KEY=$(az storage account keys list -g $TERRAFORM_BACKEND_GROUP_NAME -n $STORAGE_ACCOUNT_NAME)
-      #      echo "::set-output name=storage_account_key::$(jq -nR "$KEY" | jq -r .[0])" > /dev/null 2>&1
-      #
-      #- name: Terraform fmt
-      #  id: fmt
-      #  run: terraform fmt
-      #  continue-on-error: true
-      #
+      - name: 'Terraform fmt'
+        id: fmt
+        run: terraform fmt
+        continue-on-error: true
+      
       #- name: Terraform Init
       #  id: init
       #  run: |
