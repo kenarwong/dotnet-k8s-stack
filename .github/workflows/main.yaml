@@ -5,29 +5,30 @@ on:
     branches:
       - feature/**
 
+env:
+  GROUP_NAME: k-eco
+  TERRAFORM_BACKEND_GROUP_NAME: k-eco-terraform
+  LOCATION: eastus
+  STORAGE_ACCOUNT_NAME: kecoterraform
+  STORAGE_CONTAINER_NAME: terraform
+  STORAGE_CONTAINER_KEY: terraform.tfstate
+
 jobs:
-  azure:
+  backend:
     runs-on: ubuntu-latest
-    env:
-      ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
-      ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
-      ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
-      ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
-      GROUP_NAME: k-eco
-      TERRAFORM_BACKEND_GROUP_NAME: k-eco-terraform
-      LOCATION: eastus
-      STORAGE_ACCOUNT_NAME: kecoterraform
-      STORAGE_CONTAINER_NAME: terraform
-      STORAGE_CONTAINER_KEY: terraform.tfstate
     defaults:
       run:
-        working-directory: ./infrastructure/terraform
+        working-directory: ./infrastructure/azure
+    outputs:
+      storage_account_key: ${{ steps.setup_terraform_backend.outputs.storage_acount_key }}
     
     steps:
       - uses: actions/checkout@v2
-      - uses: hashicorp/setup-terraform@v1
+
+      - name: 'Login via Azure CLI'
+        uses: azure/login@v1
         with:
-          terraform_version: 0.12.28
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
       
       - name: 'Azure CLI script file'
         id: setup_terraform_backend
@@ -35,13 +36,28 @@ jobs:
         with:
           azcliversion: 2.8.0
           inlineScript: |
-            chmod +x $GITHUB_WORKSPACE/infrastructure/azure/setup-terraform-backend.sh
-            $GITHUB_WORKSPACE/infrastructure/azure/setup-terraform-backend.sh -g $TERRAFORM_BACKEND_GROUP_NAME -l $LOCATION --storage-account-name $STORAGE_ACCOUNT_NAME --storage-container-name $STORAGE_ACCOUNT_NAME
+            chmod +x ./setup-terraform-backend.sh
+            ./setup-terraform-backend.sh -g $TERRAFORM_BACKEND_GROUP_NAME -l $LOCATION --storage-account-name $STORAGE_ACCOUNT_NAME --storage-container-name $STORAGE_ACCOUNT_NAME
             KEY=$(az storage account keys list -g $TERRAFORM_BACKEND_GROUP_NAME -n $STORAGE_ACCOUNT_NAME)
             echo "::set-output name=storage_account_key::$(jq -nR "$KEY" | jq -r .[0])" > /dev/null 2>&1
 
-      - run: echo $PWD 
-      
+  terraform:
+    needs: backend
+    runs-on: ubuntu-latest
+    env:
+      ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+      ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+    defaults:
+      run:
+        working-directory: ./infrastructure/terraform
+    steps:
+      - uses: actions/checkout@v2
+      - uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 0.12.28
+
       - name: 'terraform fmt'
         id: fmt
         run: terraform fmt
@@ -54,7 +70,7 @@ jobs:
             -backend-config="storage_account_name=$STORAGE_ACCOUNT_NAME" \
             -backend-config="container_name=$STORAGE_CONTAINER_NAME" \
             -backend-config="key=$STORAGE_CONTAINER_KEY" \
-            -backend-config="access_key=${{ steps.setup_terraform_backend.outputs.storage_account_key }}"
+            -backend-config="access_key=${{ needs.backend.outputs.storage_account_key }}"
       
       #- name: 'terraform validate'
       #  id: validate
