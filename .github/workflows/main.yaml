@@ -18,7 +18,6 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       storage_account_key: ${{ steps.setup_terraform_backend.outputs.storage_acount_key }}
-      test: "hello world"
     
     steps:
       - uses: actions/checkout@v2
@@ -37,7 +36,7 @@ jobs:
             chmod +x $GITHUB_WORKSPACE/infrastructure/azure/setup-terraform-backend.sh
             $GITHUB_WORKSPACE/infrastructure/azure/setup-terraform-backend.sh -g $TERRAFORM_BACKEND_GROUP_NAME -l $LOCATION --storage-account-name $STORAGE_ACCOUNT_NAME --storage-container-name $STORAGE_ACCOUNT_NAME
             KEY=$(az storage account keys list -g $TERRAFORM_BACKEND_GROUP_NAME -n $STORAGE_ACCOUNT_NAME)
-            echo "::set-output name=storage_account_key::$(jq -nR "$KEY" | jq -r .[0].value)"
+            echo "::set-output name=storage_account_key::$(jq -nR "$KEY" | jq -r .[0])"
 
   terraform:
     needs: backend
@@ -62,7 +61,6 @@ jobs:
         continue-on-error: true
       
       - run: echo ${{ needs.backend.outputs.storage_account_key }}
-      - run: echo ${{ needs.backend.outputs.test }}
 
       - name: 'terraform init'
         id: init
