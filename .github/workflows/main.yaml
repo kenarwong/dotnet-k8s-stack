@@ -21,12 +21,12 @@ jobs:
     
     steps:
       - uses: actions/checkout@v2
+      - uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 0.12.28
 
-      - run: ls .
+      - run: echo $PWD 
       
-      #- uses: hashicorp/setup-terraform@v1
-      #  with:
-      #    terraform_version: 0.12.28
       #
       #- name: 'Login via Azure CLI'
       #  uses: azure/login@v1
