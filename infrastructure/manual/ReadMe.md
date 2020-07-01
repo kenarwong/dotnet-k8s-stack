@@ -1,1 +1,1 @@
-Manual scripts for to provision Azure infrastructure
+Manual scripts to provision Azure infrastructure
