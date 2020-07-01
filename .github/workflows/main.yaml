@@ -8,13 +8,13 @@ on:
 jobs:
   azure:
     runs-on: ubuntu-latest
-    #env:
-    #  GROUP_NAME: k-eco
-    #  TERRAFORM_BACKEND_GROUP_NAME: k-eco-terraform
-    #  LOCATION: eastus
-    #  STORAGE_ACCOUNT_NAME: kecoterraform
-    #  STORAGE_CONTAINER_NAME: terraform
-    #  STORAGE_CONTAINER_KEY: terraform.tfstate
+    env:
+      GROUP_NAME: k-eco
+      TERRAFORM_BACKEND_GROUP_NAME: k-eco-terraform
+      LOCATION: eastus
+      STORAGE_ACCOUNT_NAME: kecoterraform
+      STORAGE_CONTAINER_NAME: terraform
+      STORAGE_CONTAINER_KEY: terraform.tfstate
     #defaults:
     #  run:
     #    shell: bash
