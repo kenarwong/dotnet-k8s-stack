@@ -77,9 +77,7 @@ jobs:
             -var "location=$LOCATION"
       
       - name: 'terraform plan error' 
-        if: ${{ failure() }}
         run: echo ${{ steps.plan.outputs.stderr }}
-
       - name: 'terraform plan output' 
         run: echo ${{ steps.plan.outputs.stdout }}
       - name: 'terraform plan exitcode' 
