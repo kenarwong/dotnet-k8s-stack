@@ -60,14 +60,16 @@ jobs:
         run: terraform fmt
         continue-on-error: true
       
-      - name: 'terraform init'
-        id: init
-        run: |
-          terraform init \
-            -backend-config="storage_account_name=$STORAGE_ACCOUNT_NAME" \
-            -backend-config="container_name=$STORAGE_CONTAINER_NAME" \
-            -backend-config="key=$STORAGE_CONTAINER_KEY" \
-            -backend-config="access_key=${{ needs.backend.outputs.storage_account_key }}"
+      - run: echo ${{ needs.backend.outputs.storage_account_key }}
+
+      #- name: 'terraform init'
+      #  id: init
+      #  run: |
+      #    terraform init \
+      #      -backend-config="storage_account_name=$STORAGE_ACCOUNT_NAME" \
+      #      -backend-config="container_name=$STORAGE_CONTAINER_NAME" \
+      #      -backend-config="key=$STORAGE_CONTAINER_KEY" \
+      #      -backend-config="access_key=${{ needs.backend.outputs.storage_account_key }}"
       
       #- name: 'terraform validate'
       #  id: validate
