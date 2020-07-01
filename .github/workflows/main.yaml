@@ -52,7 +52,6 @@ jobs:
         id: init
         run: |
           terraform init \
-            -backend-config="resouce_group_name=$TERRAFORM_BACKEND_GROUP_NAME" \
             -backend-config="storage_account_name=$STORAGE_ACCOUNT_NAME" \
             -backend-config="container_name=$STORAGE_CONTAINER_NAME" \
             -backend-config="key=$STORAGE_CONTAINER_KEY" \
