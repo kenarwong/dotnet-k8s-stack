@@ -15,6 +15,9 @@ jobs:
       STORAGE_ACCOUNT_NAME: kecoterraform
       STORAGE_CONTAINER_NAME: terraform
       STORAGE_CONTAINER_KEY: terraform.tfstate
+    defaults:
+      run:
+        working-directory: ./infrastructure/terraform
     
     steps:
       - uses: actions/checkout@v2
