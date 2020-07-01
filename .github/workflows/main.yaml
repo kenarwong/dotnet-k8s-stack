@@ -17,7 +17,7 @@ jobs:
       STORAGE_CONTAINER_KEY: terraform.tfstate
     defaults:
       run:
-        working-directory: ./infrastructure/terraform
+        working-directory: $GITHUB_WORKSPACE/infrastructure/terraform
     
     steps:
       - uses: actions/checkout@v2
