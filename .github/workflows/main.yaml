@@ -71,7 +71,10 @@ jobs:
       
       - name: 'terraform plan'
         id: plan
-        run: terraform plan -no-color
+        run: |
+          terraform plan -no-color
+            -var "resource_group_name=$GROUP_NAME" \
+            -var "location=$LOCATION"
       
       - name: 'terraform plan error' 
         if: ${{ failure() }}
