@@ -9,6 +9,10 @@ jobs:
   azure:
     runs-on: ubuntu-latest
     env:
+      ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+      ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
       GROUP_NAME: k-eco
       TERRAFORM_BACKEND_GROUP_NAME: k-eco-terraform
       LOCATION: eastus
@@ -24,11 +28,6 @@ jobs:
       - uses: hashicorp/setup-terraform@v1
         with:
           terraform_version: 0.12.28
-      
-      - name: 'Login via Azure CLI'
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
       
       - name: 'Azure CLI script file'
         id: setup_terraform_backend

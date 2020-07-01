@@ -6,7 +6,7 @@ terraform {
 }
   
 ## Azure resource provider ##
-provider "azurerm" {
+provider "azuread" {
   version = "=2.16.0"
   features {}
 }
