@@ -73,8 +73,8 @@ jobs:
       - run: echo ${{ steps.plan.outputs.exitcode }}
 
       - name: Terraform Apply
-      id: apply
-      run: |
-        terraform apply --auto-approve \
-          -var "resource_group_name=$GROUP_NAME" \
-          -var "location=$LOCATION"
+        id: apply
+        run: |
+          terraform apply --auto-approve \
+            -var "resource_group_name=$GROUP_NAME" \
+            -var "location=$LOCATION"
