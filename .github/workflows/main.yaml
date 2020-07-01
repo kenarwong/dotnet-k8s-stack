@@ -42,7 +42,7 @@ jobs:
       #      KEY=$(az storage account keys list -g $TERRAFORM_BACKEND_GROUP_NAME -n $STORAGE_ACCOUNT_NAME)
       #      echo "::set-output name=storage_account_key::$(jq -nR "$KEY" | jq -r .[0])" > /dev/null 2>&1
 
-      - run: echo "::debug::$PWD"
+      - run: echo "::debug::hello"
 
       #- name: Terraform fmt
       #  id: fmt
