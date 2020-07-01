@@ -17,7 +17,7 @@ jobs:
       STORAGE_CONTAINER_KEY: terraform.tfstate
     defaults:
       run:
-        working-directory: $GITHUB_WORKSPACE/infrastructure/terraform
+        working-directory: ${{ github.workspace }}/infrastructure/terraform
     
     steps:
       - run: echo $PWD
