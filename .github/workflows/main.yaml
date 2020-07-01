@@ -32,9 +32,7 @@ jobs:
           azcliversion: 2.8.0
           inlineScript: |
             chmod +x $GITHUB_WORKSPACE/infrastructure/azure/setup-terraform-backend.sh
-            $GITHUB_WORKSPACE/infrastructure/azure/setup-terraform-backend.sh -g $TERRAFORM_BACKEND_GROUP_NAME -l $LOCATION --storage-account-name $STORAGE_ACCOUNT_NAME --storage-container-name $STORAGE_ACCOUNT_NAME
-            #KEY=$(az storage account keys list -g $TERRAFORM_BACKEND_GROUP_NAME -n $STORAGE_ACCOUNT_NAME)
-            #echo "::set-output name=storage_account_key::$(jq -nR "$KEY" | jq -r .[0])"
+            $GITHUB_WORKSPACE/infrastructure/azure/setup-terraform-backend.sh -g $TERRAFORM_BACKEND_GROUP_NAME -l $LOCATION --storage-account-name $STORAGE_ACCOUNT_NAME --storage-container-name $STORAGE_CONTAINER_NAME
 
   terraform:
     needs: backend
@@ -57,8 +55,6 @@ jobs:
         id: fmt
         run: terraform fmt
         continue-on-error: true
-      
-        #- run: echo ${{ needs.backend.outputs.storage_account_key }}
 
       - name: 'terraform init'
         id: init
