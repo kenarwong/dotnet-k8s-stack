@@ -115,7 +115,8 @@ jobs:
         run: |
           echo "Azure DNS name servers"
           terraform output name_servers
-          terraform output kube_config > aksconfig
+          terraform output kube_config > ./aksconfig
+          ls .
           IP_ADDRESS="$(terraform output ip_address)"
           ACR_LOGIN_SERVER="$(terraform output acr_login_server)"
           echo "::set-output name=ip_address::"$IP_ADDRESS""
@@ -131,7 +132,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./infrastructure/docker
+        working-directory: ./docker
     steps:
       - uses: actions/checkout@v2
 
