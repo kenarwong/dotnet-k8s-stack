@@ -99,13 +99,13 @@ jobs:
         id: fmt
         run: |
           cd $WORKING_DIRECTORY
-          ls .
           terraform fmt
         continue-on-error: true
 
       - name: 'terraform init'
         id: init
         run: |
+          cd $WORKING_DIRECTORY
           terraform init \
             -backend-config="resource_group_name=$TERRAFORM_BACKEND_GROUP_NAME" \
             -backend-config="storage_account_name=$STORAGE_ACCOUNT_NAME" \
@@ -114,23 +114,28 @@ jobs:
       
       - name: 'terraform validate'
         id: validate
-        run: terraform validate -no-color
+        run: |
+          cd $WORKING_DIRECTORY
+          terraform validate -no-color
       
       - name: 'terraform plan'
         id: plan
         run: |
+          cd $WORKING_DIRECTORY
           terraform plan -no-color \
             -var-file "$TFVARS_FILE"
       
       - name: 'terraform apply'
         id: apply
         run: |
+          cd $WORKING_DIRECTORY
           terraform apply --auto-approve \
             -var-file "$TFVARS_FILE"
 
       - name: 'terraform output'
         id: output
         run: |
+          cd $WORKING_DIRECTORY
           echo "Azure DNS name servers"
           terraform output name_servers
           #KUBE_CONFIG="$(terraform output kube_config)"
