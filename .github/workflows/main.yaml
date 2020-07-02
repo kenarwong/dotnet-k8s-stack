@@ -99,7 +99,6 @@ jobs:
       - name: 'terraform fmt'
         id: fmt
         run: |
-          ls .
           cd $WORKING_DIRECTORY
           terraform fmt
         continue-on-error: true
@@ -107,7 +106,6 @@ jobs:
       - name: 'terraform init'
         id: init
         run: |
-          ls .
           cd $WORKING_DIRECTORY
           terraform init \
             -backend-config="resource_group_name=$TERRAFORM_BACKEND_GROUP_NAME" \
@@ -118,14 +116,12 @@ jobs:
       - name: 'terraform validate'
         id: validate
         run: |
-          ls .
           cd $WORKING_DIRECTORY
           terraform validate -no-color
       
       - name: 'terraform plan'
         id: plan
         run: |
-          ls .
           cd $WORKING_DIRECTORY
           terraform plan -no-color \
             -var-file "$TFVARS_FILE"
@@ -133,7 +129,6 @@ jobs:
       - name: 'terraform apply'
         id: apply
         run: |
-          ls .
           cd $WORKING_DIRECTORY
           terraform apply --auto-approve \
             -var-file "$TFVARS_FILE"
@@ -141,7 +136,6 @@ jobs:
       - name: 'terraform output'
         id: output
         run: |
-          ls .
           cd $WORKING_DIRECTORY
           echo "Azure DNS name servers"
           terraform output name_servers
