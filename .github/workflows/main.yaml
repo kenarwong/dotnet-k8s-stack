@@ -124,7 +124,7 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: kube_config
-            path: ./aksconfig
+          path: ./aksconfig
 
   docker:
     needs: terraform
