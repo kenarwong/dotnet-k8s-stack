@@ -115,17 +115,11 @@ jobs:
         run: |
           echo "Azure DNS name servers"
           terraform output name_servers
-          terraform output kube_config > aksconfig.yaml
+          KUBE_CONFIG="$(terraform output kube_config)"
           IP_ADDRESS="$(terraform output ip_address)"
           ACR_LOGIN_SERVER="$(terraform output acr_login_server)"
           echo "::set-output name=ip_address::"$IP_ADDRESS""
           echo "::set-output name=acr_login_server::"$ACR_LOGIN_SERVER""
-
-      - name: 'Upload aksconfig'
-        uses: actions/upload-artifact@v2
-        with:
-          name: kube_config
-          path: aksconfig.yaml
 
   docker:
     needs: terraform
@@ -137,5 +131,6 @@ jobs:
       - uses: actions/checkout@v2
 
       - run: |
+          echo "${{ needs.terraform.outputs.kube_Config }}" 
           echo "${{ needs.terraform.outputs.ip_address }}" 
           echo "${{ needs.terraform.outputs.acr_login_server }}"
