@@ -35,6 +35,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: 'Set working directory'
+        run: |
+          echo "::set-env name=WORKING_DIRECTORY::$GITHUB_WORKSPACE/infrastructure/terraform/$PROVIDER/backend"
+
       - name: 'Login via Azure CLI'
         uses: azure/login@v1
         with:
@@ -46,8 +50,8 @@ jobs:
         with:
           azcliversion: 2.8.0
           inlineScript: |
-            chmod +x $GITHUB_WORKSPACE/infrastructure/terraform/backend/$PROVIDER/setup-terraform-backend.sh
-            $GITHUB_WORKSPACE/infrastructure/terraform/backend/$PROVIDER/setup-terraform-backend.sh -g $TERRAFORM_BACKEND_GROUP_NAME -l $LOCATION --storage-account-name $STORAGE_ACCOUNT_NAME --storage-container-name $STORAGE_CONTAINER_NAME
+            chmod +x $WORKING_DIRECTORY/setup-terraform-backend.sh
+            $WORKING_DIRECTORY/setup-terraform-backend.sh -g $TERRAFORM_BACKEND_GROUP_NAME -l $LOCATION --storage-account-name $STORAGE_ACCOUNT_NAME --storage-container-name $STORAGE_CONTAINER_NAME
 
   terraform:
     needs: backend
@@ -65,9 +69,6 @@ jobs:
       DOMAIN_NAME: ${{ secrets.PUBLIC_DOMAIN_NAME }}
       ACR_NAME: kecoacr
       TFVARS_FILE: "workflow.tfvars"
-    defaults:
-      run:
-        working-directory: ./infrastructure/terraform
     outputs:
       #kube_config: ${{ steps.output.outputs.kube_config }}
       ip_address: ${{ steps.output.outputs.ip_address }}
@@ -79,6 +80,11 @@ jobs:
         with:
           terraform_version: 0.12.28
           terraform_wrapper: false
+
+      - name: 'Set working directory'
+        run: |
+          echo "::set-env name=WORKING_DIRECTORY::$GITHUB_WORKSPACE/infrastructure/terraform/$PROVIDER/"
+          cd $WORKING_DIRECTORY
       
       - name: 'create tfvars file'
         run: |
