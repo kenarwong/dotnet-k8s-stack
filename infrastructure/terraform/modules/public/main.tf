@@ -1,5 +1,5 @@
 ## Public IP ##
-resource "azurerm_public_ip" "public" {
+resource "azurerm_public_ip" "public-ip" {
   name                = "${var.cluster_name}-public-ip"
   resource_group_name = var.resource_group_name
   location            = var.location
@@ -11,7 +11,7 @@ resource "azurerm_public_ip" "public" {
 }
 
 ## DNS Zone ##
-resource "azurerm_dns_zone" "public" {
+resource "azurerm_dns_zone" "dns" {
   name                = var.domain_name
   resource_group_name = var.resource_group_name
 
@@ -21,7 +21,7 @@ resource "azurerm_dns_zone" "public" {
 }
 
 ## A Record ##
-resource "azurerm_dns_a_record" "public" {
+resource "azurerm_dns_a_record" "a-record" {
   name                = "@"
   zone_name           = azurerm_dns_zone.public.name
   resource_group_name = var.resource_group_name
@@ -29,7 +29,7 @@ resource "azurerm_dns_a_record" "public" {
 }
 
 ## CNAME Record ##
-resource "azurerm_dns_cname_record" "public" {
+resource "azurerm_dns_cname_record" "api-cname-record" {
   name                = "api"
   zone_name           = azurerm_dns_zone.public.name
   resource_group_name = var.resource_group_name
@@ -37,7 +37,7 @@ resource "azurerm_dns_cname_record" "public" {
 }
 
 ## CNAME Record ##
-resource "azurerm_dns_cname_record" "public" {
+resource "azurerm_dns_cname_record" "all-cname-record" {
   name                = "*"
   zone_name           = azurerm_dns_zone.public.name
   resource_group_name = var.resource_group_name
