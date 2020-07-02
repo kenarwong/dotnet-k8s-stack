@@ -44,6 +44,11 @@ variable "client_secret" {
   type        = string
 }
 
+variable "service_principal_object_id" {
+  description = "The service principal object id for ACR role assignment."
+  type        = string
+}
+
 variable "environment" {
   description = "The environment of the deployment."
   type        = string

@@ -45,6 +45,7 @@ jobs:
       ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
       K8S_CLIENT_ID: ${{ secrets.K8S_CLIENT_ID }}
       K8S_CLIENT_SECRET: ${{ secrets.K8S_CLIENT_SECRET }}
+      K8S_OBJECT_ID: ${{ secrets.K8S_OBJECT_ID }}
       GROUP_NAME: k-eco
       CLUSTER_NAME: k-cluster
       DOMAIN_NAME: ${{ secrets.PUBLIC_DOMAIN_NAME }}

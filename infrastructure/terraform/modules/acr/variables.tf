@@ -25,7 +25,7 @@ variable "sku" {
 }
 
 variable "service_principal" {
-  description = "The service principal to perform ACR operations."
+  description = "The service principal object id to perform ACR operations."
   type        = string
 }
 

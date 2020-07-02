@@ -60,7 +60,7 @@ module "acr" {
   resource_group_name = azurerm_resource_group.rg.name
   location            = var.location
   acr_name            = var.acr_name
-  service_principal   = var.client_id
+  service_principal   = var.service_principal_object_id
   environment         = var.environment
 }
 
