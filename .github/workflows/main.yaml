@@ -13,6 +13,9 @@ env:
   STORAGE_ACCOUNT_NAME: kecoterraform
   STORAGE_CONTAINER_NAME: terraform
   STORAGE_CONTAINER_KEY: terraform.tfstate
+  K8S_CLIENT_ID: ${{ secrets.K8S_CLIENT_ID }}
+  K8S_CLIENT_SECRET: ${{ secrets.K8S_CLIENT_SECRET }}
+  K8S_OBJECT_ID: ${{ secrets.K8S_OBJECT_ID }}
 
 jobs:
   set-environment:
@@ -57,9 +60,6 @@ jobs:
       ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
       ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
       ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
-      K8S_CLIENT_ID: ${{ secrets.K8S_CLIENT_ID }}
-      K8S_CLIENT_SECRET: ${{ secrets.K8S_CLIENT_SECRET }}
-      K8S_OBJECT_ID: ${{ secrets.K8S_OBJECT_ID }}
       GROUP_NAME: k-eco
       CLUSTER_NAME: k-cluster
       DOMAIN_NAME: ${{ secrets.PUBLIC_DOMAIN_NAME }}
@@ -150,9 +150,16 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./docker
+        working-directory: ./container
     steps:
       - uses: actions/checkout@v2
 
-      - run: |
-          echo "${{ needs.terraform.outputs.acr_login_server }}"
+      - uses: azure/docker-login@v1
+        with:
+          login-server: "${{ needs.terraform.outputs.acr_login_server }}"
+          username: "$K8S_CLIENT_ID"
+          password: "$K8S_CLIENT_SECRET"
+
+          #- run: |
+          #  docker build . -t contoso.azurecr.io/k8sdemo:${{ github.sha }}
+          #  docker push contoso.azurecr.io/k8sdemo:${{ github.sha }}
