@@ -63,14 +63,15 @@ jobs:
       - name: 'create tfvars file'
         run: |
           cat <<EOF > $TFVARS_FILE
-          resource_group_name = "$GROUP_NAME"
-          location            = "$LOCATION"
-          cluster_name        = "$CLUSTER_NAME"
-          domain_name         = "$DOMAIN_NAME"
-          acr_name            = "$ACR_NAME"
-          client_id           = "$K8S_CLIENT_ID"
-          client_secret       = "$K8S_CLIENT_SECRET"
-          environment         = "$ENVIRONMENT"
+          resource_group_name         = "$GROUP_NAME"
+          location                    = "$LOCATION"
+          cluster_name                = "$CLUSTER_NAME"
+          domain_name                 = "$DOMAIN_NAME"
+          acr_name                    = "$ACR_NAME"
+          client_id                   = "$K8S_CLIENT_ID"
+          client_secret               = "$K8S_CLIENT_SECRET"
+          service_principal_object_id = "$K8S_OBJECT_ID"
+          environment                 = "$ENVIRONMENT"
           EOF
 
       - name: 'terraform fmt'
