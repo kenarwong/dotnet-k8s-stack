@@ -37,5 +37,5 @@ module "aks" {
 }
 
 output "kube_config" {
-  value = "${modules.aks.kube_config}"
+  value = "${module.aks.kube_config}"
 }
