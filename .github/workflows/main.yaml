@@ -5,8 +5,10 @@ on:
     branches:
       - master
       - dev
+      - feature/**
 
 env:
+  ENVIRONMENT: dev
   PROVIDER: azure
   LOCATION: eastus
   TERRAFORM_BACKEND_GROUP_NAME: k-eco-terraform
@@ -22,6 +24,11 @@ jobs:
     runs-on: ubuntu-latest
     
     steps:
+      - name: 'Set environment to dev'
+        if: contains(github.ref, 'feature')
+        run: |
+          echo "::set-env name=ENVIRONMENT::dev"
+
       - name: 'Set environment to dev'
         if: endsWith(github.ref, '/dev')
         run: |
