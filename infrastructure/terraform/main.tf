@@ -70,7 +70,7 @@ module "acr" {
 
 output "kube_config" {
   value     = "${module.aks.kube_config}"
-  sensitve  = true
+  sensitive  = true
 }
 
 output "ip_address" {
