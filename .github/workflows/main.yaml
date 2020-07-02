@@ -12,6 +12,7 @@ env:
   STORAGE_ACCOUNT_NAME: kecoterraform
   STORAGE_CONTAINER_NAME: terraform
   STORAGE_CONTAINER_KEY: terraform.tfstate
+  ENVIRONMENT: dev
 
 jobs:
   backend:
@@ -42,6 +43,9 @@ jobs:
       ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
       ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
       ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+      K8S_CLIENT_ID: ${{ secrets.K8S_CLIENT_ID }}
+      K8S_CLIENT_SECRET: ${{ secrets.K8S_CLIENT_SECRET }}
+      TFVARS_FILE: "workflow.tfvars"
     defaults:
       run:
         working-directory: ./infrastructure/terraform
@@ -50,6 +54,16 @@ jobs:
       - uses: hashicorp/setup-terraform@v1
         with:
           terraform_version: 0.12.28
+      
+      - name: 'create tfvars file'
+        run: |
+          cat <<EOF > $TFVARS_FILE
+          resource_group_name = "$GROUP_NAME"
+          location = "$LOCATION"
+          client_id = "$K8S_CLIENT_ID"
+          client_secret = "$K8S_CLIENT_SECRET"
+          environment = "$ENVIRONMENT"
+          EOF
 
       - name: 'terraform fmt'
         id: fmt
@@ -73,12 +87,10 @@ jobs:
         id: plan
         run: |
           terraform plan -no-color \
-            -var "resource_group_name=$GROUP_NAME" \
-            -var "location=$LOCATION"
+            -var-file "$TFVARS_FILE"
       
       - name: 'terraform apply'
         id: apply
         run: |
           terraform apply --auto-approve \
-            -var "resource_group_name=$GROUP_NAME" \
-            -var "location=$LOCATION"
+            -var-file "$TFVARS_FILE"

@@ -5,7 +5,6 @@
 # The following resources are removed:
 # - Resource group
 # - AKS resource group
-# - Service principal
 
 
 
@@ -20,7 +19,7 @@ EOF
 ##### Parameters
 
 GROUP_NAME=
-AKS_GROUP_NAME=NetworkWatcherRG
+NETWORK_WATCHER_GROUP_NAME=NetworkWatcherRG
 DEBUG=
 
 ##### Functions
@@ -75,7 +74,7 @@ if [ "$DEBUG" = "1" ]; then
   echo "Deleting AKS resource group..."
 fi
 
-az group delete -g $AKS_GROUP_NAME --yes
+az group delete -g $NETWORK_WATCHER_GROUP_NAME --yes
 
 if [ $? -ne 0 ]; then
   exit 1
@@ -83,25 +82,4 @@ fi
 
 if [ "$DEBUG" = "1" ]; then
   echo "AKS Resource group deleted."
-fi
-
-# Delete service principal
-if [ "$DEBUG" = "1" ]; then
-  echo "Deleting service principal..."
-fi
-
-SERVICE_PRINCIPAL=$(az ad sp list --filter "displayname eq '$GROUP_NAME'")
-if [ "$(jq -nR "$SERVICE_PRINCIPAL" | jq -r .[0].appId)" = 'null' ]; then
-  error "Service principal $GROUP_NAME not found." >&2
-  exit 1
-fi
-
-az ad sp delete --id $(jq -nR "$SERVICE_PRINCIPAL" | jq -r .[0].appId)
-
-if [ $? -ne 0 ]; then
-  exit 1
-fi
-
-if [ "$DEBUG" = "1" ]; then
-  echo "Service principal deleted."
 fi
