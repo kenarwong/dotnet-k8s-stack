@@ -11,31 +11,31 @@ provider "azurerm" {
   features {}
 }
 
-## Azure resource group for the kubernetes cluster ##
+# ---------------------------------------------------------------------------------------------------------------------
+# Azure Resource Group
+# ---------------------------------------------------------------------------------------------------------------------
+
 resource "azurerm_resource_group" "azure-k8s" {
   name     = var.resource_group_name
   location = var.location
 }
 
-## AKS kubernetes cluster ##
-resource "azurerm_kubernetes_cluster" "azure-k8s" {
-  name                = var.cluster_name
+# ---------------------------------------------------------------------------------------------------------------------
+# Azure Kubernetes Service
+# ---------------------------------------------------------------------------------------------------------------------
+
+module "aks" {
+  source = "./modules/aks"
+
   resource_group_name = azurerm_resource_group.azure-k8s.name
   location            = azurerm_resource_group.azure-k8s.location
-  dns_prefix          = "${var.cluster_name}-${azurerm_resource_group.azure-k8s.name}"
+  cluster_name        = var.cluster_name
+  node_count          = var.node_count
+  client_id           = var.client_id
+  client_secret       = var.client_secret
+  environment         = var.environment
+}
 
-  default_node_pool {
-    name       = "default"
-    node_count = var.node_count
-    vm_size    = "Standard_DS2_v2"
-  }
-
-  service_principal {
-    client_id     = var.client_id
-    client_secret = var.client_secret
-  }
-
-  tags = {
-    Environment = var.environment
-  }
+output "kube_config" {
+  value = "${modules.aks.kube_config}"
 }

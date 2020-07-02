@@ -4,12 +4,12 @@
 # ---------------------------------------------------------------------------------------------------------------------
 
 variable "resource_group_name" {
-  description = "The name of the resource group for the deployment."
+  description = "The name of the resource group for the AKS cluster."
   type        = string
 }
 
 variable "location" {
-  description = "The location of the deployment."
+  description = "The location of the AKS cluster."
   type        = string
 }
 
@@ -35,6 +35,6 @@ variable "client_secret" {
 }
 
 variable "environment" {
-  description = "The environment of the deployment."
+  description = "The environment of the AKS cluster."
   type        = string
 }
