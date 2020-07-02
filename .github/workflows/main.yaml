@@ -15,7 +15,7 @@ env:
   STORAGE_CONTAINER_KEY: terraform.tfstate
 
 jobs:
-  backend:
+  set-environment:
     runs-on: ubuntu-latest
     
     steps:
