@@ -8,6 +8,7 @@ on:
 env:
   ENVIRONMENT: dev
   PROVIDER: azure
+  LOCATION: eastus
   TERRAFORM_BACKEND_GROUP_NAME: k-eco-terraform
   STORAGE_ACCOUNT_NAME: kecoterraform
   STORAGE_CONTAINER_NAME: terraform
@@ -45,7 +46,6 @@ jobs:
       K8S_CLIENT_ID: ${{ secrets.K8S_CLIENT_ID }}
       K8S_CLIENT_SECRET: ${{ secrets.K8S_CLIENT_SECRET }}
       GROUP_NAME: k-eco
-      LOCATION: eastus
       CLUSTER_NAME: k-cluster
       DOMAIN_NAME: ${{ secrets.PUBLIC_DOMAIN_NAME }}
       ACR_NAME: kecoacr
