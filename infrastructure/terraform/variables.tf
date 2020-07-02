@@ -18,6 +18,11 @@ variable "cluster_name" {
   type        = string
 }
 
+variable "domain_name" {
+  description = "The domain name to be used for AKS ingress."
+  type        = string
+}
+
 variable "node_count" {
   description = "The number of nodes to provision for the AKS cluster."
   type        = number

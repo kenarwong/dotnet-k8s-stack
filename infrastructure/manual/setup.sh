@@ -168,6 +168,7 @@ fi
 
 CLUSTER_RESOURCE_GROUP=$(az aks show  -g $GROUP_NAME -n $CLUSTER_NAME --query nodeResourceGroup -o tsv)
 PUBLIC_IP=$(az network public-ip create --resource-group $CLUSTER_RESOURCE_GROUP --name $CLUSTER_NAME-public-ip --sku Standard --allocation-method static --query publicIp.ipAddress -o tsv)
+PUBLIC_IP_ID=$(az network public-ip list --query "[?ipAddress=='$PUBLIC_IP'].id" -o tsv)
 
 if [ $? -ne 0 ]; then
   exit 1
@@ -182,7 +183,6 @@ if [ "$DEBUG" = "1" ]; then
   echo "Creating DNS Zone..."
 fi
 
-PUBLIC_IP_ID=$(az network public-ip list --query "[?ipAddress=='$PUBLIC_IP'].id" -o tsv)
 az network dns zone create -g $CLUSTER_RESOURCE_GROUP -n $DOMAIN_NAME
 
 if [ $? -ne 0 ]; then
