@@ -58,10 +58,14 @@ module "acr" {
   source = "./modules/acr"
 
   resource_group_name = azurerm_resource_group.rg.name
-  location            = azurerm_resource_group.rg.location
+  acr_name            = var.acr_name
   service_principal   = var.client_id
   environment         = var.environment
 }
+
+# ---------------------------------------------------------------------------------------------------------------------
+# Outputs
+# ---------------------------------------------------------------------------------------------------------------------
 
 output "kube_config" {
   value = "${module.aks.kube_config}"

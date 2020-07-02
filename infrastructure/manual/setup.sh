@@ -268,17 +268,17 @@ if [ "$DEBUG" = "1" ]; then
   echo "ACR role assignment created."
 fi
 
-## Login to ACR
-#if [ "$DEBUG" = "1" ]; then
-#  echo "Logging into ACR..."
-#fi
-#
-#az acr login -n $ACR_NAME
-#
-#if [ $? -ne 0 ]; then
-#  exit 1
-#fi
-#
-#if [ "$DEBUG" = "1" ]; then
-#  echo "Logged into ACR."
-#fi
+# Login to ACR
+if [ "$DEBUG" = "1" ]; then
+  echo "Logging into ACR..."
+fi
+
+az acr login -n $ACR_NAME
+
+if [ $? -ne 0 ]; then
+  exit 1
+fi
+
+if [ "$DEBUG" = "1" ]; then
+  echo "Logged into ACR."
+fi

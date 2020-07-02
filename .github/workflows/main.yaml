@@ -6,15 +6,12 @@ on:
       - feature/**
 
 env:
-  GROUP_NAME: k-eco
-  CLUSTER_NAME: k-cluster
+  ENVIRONMENT: dev
+  PROVIDER: azure
   TERRAFORM_BACKEND_GROUP_NAME: k-eco-terraform
-  LOCATION: eastus
   STORAGE_ACCOUNT_NAME: kecoterraform
   STORAGE_CONTAINER_NAME: terraform
   STORAGE_CONTAINER_KEY: terraform.tfstate
-  ENVIRONMENT: dev
-  PROVIDER: azure
 
 jobs:
   backend:
@@ -47,6 +44,11 @@ jobs:
       ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
       K8S_CLIENT_ID: ${{ secrets.K8S_CLIENT_ID }}
       K8S_CLIENT_SECRET: ${{ secrets.K8S_CLIENT_SECRET }}
+      GROUP_NAME: k-eco
+      LOCATION: eastus
+      CLUSTER_NAME: k-cluster
+      DOMAIN_NAME: $${{ PUBLIC_DOMAIN_NAME }}
+      ACR_NAME: kecoacr
       TFVARS_FILE: "workflow.tfvars"
     defaults:
       run:
@@ -61,11 +63,13 @@ jobs:
         run: |
           cat <<EOF > $TFVARS_FILE
           resource_group_name = "$GROUP_NAME"
-          location = "$LOCATION"
-          cluster_name = "$CLUSTER_NAME"
-          client_id = "$K8S_CLIENT_ID"
-          client_secret = "$K8S_CLIENT_SECRET"
-          environment = "$ENVIRONMENT"
+          location            = "$LOCATION"
+          cluster_name        = "$CLUSTER_NAME"
+          domain_name         = "$DOMAIN_NAME"
+          acr_name            = "$ACR_NAME"
+          client_id           = "$K8S_CLIENT_ID"
+          client_secret       = "$K8S_CLIENT_SECRET"
+          environment         = "$ENVIRONMENT"
           EOF
 
       - name: 'terraform fmt'

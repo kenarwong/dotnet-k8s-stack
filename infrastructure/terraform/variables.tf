@@ -23,6 +23,11 @@ variable "domain_name" {
   type        = string
 }
 
+variable "acr_name" {
+  description = "The name of the ACR."
+  type        = string
+}
+
 variable "node_count" {
   description = "The number of nodes to provision for the AKS cluster."
   type        = number
