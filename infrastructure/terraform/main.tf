@@ -39,3 +39,7 @@ module "aks" {
 output "kube_config" {
   value = "${module.aks.kube_config}"
 }
+
+output "cluster_resource_group" {
+  value = "${module.aks.cluster_resource_group}"
+}
