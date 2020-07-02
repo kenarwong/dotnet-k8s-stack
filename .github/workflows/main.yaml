@@ -115,7 +115,7 @@ jobs:
         run: |
           echo "Azure DNS name servers"
           terraform output name_servers
-          terraform output kube_config > ./aksconfig
+          terraform output kube_config > $GITHUB_WORKSPACE/aksconfig
           ls .
           IP_ADDRESS="$(terraform output ip_address)"
           ACR_LOGIN_SERVER="$(terraform output acr_login_server)"
@@ -125,7 +125,7 @@ jobs:
       - uses: actions/upload-artifact@v2
         with:
           name: kube_config
-          path: ./aksconfig
+          path: $GITHUB_WORKSPACE/aksconfig
 
   docker:
     needs: terraform
