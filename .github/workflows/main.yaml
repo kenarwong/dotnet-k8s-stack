@@ -55,7 +55,7 @@ jobs:
       run:
         working-directory: ./infrastructure/terraform
     outputs:
-      kube_config: ${{ steps.output.outputs.kube_config }}
+      #kube_config: ${{ steps.output.outputs.kube_config }}
       ip_address: ${{ steps.output.outputs.ip_address }}
       acr_login_server: ${{ steps.output.outputs.acr_login_server }}
 
@@ -115,7 +115,7 @@ jobs:
         run: |
           echo "Azure DNS name servers"
           terraform output name_servers
-          KUBE_CONFIG="$(terraform output kube_config)"
+          #KUBE_CONFIG="$(terraform output kube_config)"
           IP_ADDRESS="$(terraform output ip_address)"
           ACR_LOGIN_SERVER="$(terraform output acr_login_server)"
           echo "::set-output name=ip_address::"$IP_ADDRESS""
@@ -131,6 +131,4 @@ jobs:
       - uses: actions/checkout@v2
 
       - run: |
-          echo "${{ needs.terraform.outputs.kube_Config }}" 
-          echo "${{ needs.terraform.outputs.ip_address }}" 
           echo "${{ needs.terraform.outputs.acr_login_server }}"
