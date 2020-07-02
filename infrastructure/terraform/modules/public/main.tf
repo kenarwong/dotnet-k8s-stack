@@ -25,6 +25,7 @@ resource "azurerm_dns_a_record" "a-record" {
   name                = "@"
   zone_name           = azurerm_dns_zone.dns.name
   resource_group_name = var.resource_group_name
+  ttl                 = 300
   target_resource_id  = azurerm_public_ip.public-ip.id
 }
 
@@ -33,6 +34,7 @@ resource "azurerm_dns_cname_record" "api-cname-record" {
   name                = "api"
   zone_name           = azurerm_dns_zone.dns.name
   resource_group_name = var.resource_group_name
+  ttl                 = 300
   record              = var.domain_name
 }
 
@@ -41,5 +43,6 @@ resource "azurerm_dns_cname_record" "all-cname-record" {
   name                = "*"
   zone_name           = azurerm_dns_zone.dns.name
   resource_group_name = var.resource_group_name
+  ttl                 = 300
   record              = var.domain_name
 }
