@@ -114,7 +114,7 @@ jobs:
         run: |
           echo "Azure DNS name servers"
           terraform output name_servers
-          IP_ADDRESS="$(terraform output ip_address)"
+          IP_ADDRESS="$(echo test)"
           ACR_LOGIN_SERVER="$(terraform output acr_login_server)"
           echo "::set-output name=kube_config::test"
           echo "::set-output name=ip_address::"$IP_ADDRESS""
