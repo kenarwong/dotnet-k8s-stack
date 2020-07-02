@@ -112,13 +112,12 @@ jobs:
       - name: 'terraform output'
         id: output
         run: |
-          echo "Azure DNS name servers"
-          terraform output name_servers
+          echo "$(terraform output)"
+          #echo "Azure DNS name servers"
           #IP_ADDRESS="$(echo test)"
           #ACR_LOGIN_SERVER="$(terraform output acr_login_server)"
           #echo $IP_ADDRESS
           #echo $ACR_LOGIN_SERVER
-          echo "${{ steps.apply.outputs.stdout }}"
           #echo "::set-output name=kube_config::test"
           #echo "::set-output name=ip_address::"$IP_ADDRESS""
           #echo "::set-output name=acr_login_server::"$ACR_LOGIN_SERVER""
