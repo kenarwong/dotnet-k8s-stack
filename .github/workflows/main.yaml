@@ -114,22 +114,23 @@ jobs:
         run: |
           echo "Azure DNS name servers"
           terraform output name_servers
-          IP_ADDRESS="$(echo test)"
-          ACR_LOGIN_SERVER="$(terraform output acr_login_server)"
-          echo $IP_ADDRESS
-          echo $ACR_LOGIN_SERVER
-          echo "::set-output name=kube_config::test"
-          echo "::set-output name=ip_address::"$IP_ADDRESS""
-          echo "::set-output name=acr_login_server::"$ACR_LOGIN_SERVER""
+          #IP_ADDRESS="$(echo test)"
+          #ACR_LOGIN_SERVER="$(terraform output acr_login_server)"
+          #echo $IP_ADDRESS
+          #echo $ACR_LOGIN_SERVER
+          echo ${{ steps.apply.outputs.stdout }}
+          #echo "::set-output name=kube_config::test"
+          #echo "::set-output name=ip_address::"$IP_ADDRESS""
+          #echo "::set-output name=acr_login_server::"$ACR_LOGIN_SERVER""
 
-  docker:
-    needs: terraform
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./infrastructure/docker
-    steps:
-      - uses: actions/checkout@v2
+  #docker:
+  #  needs: terraform
+  #  runs-on: ubuntu-latest
+  #  defaults:
+  #    run:
+  #      working-directory: ./infrastructure/docker
+  #  steps:
+  #    - uses: actions/checkout@v2
 
-      - run: |
-          echo ${{ needs.terraform.outputs.kube_config }} ${{ needs.terraform.outputs.ip_address }} ${{ needs.terraform.outputs.acr_login_server }}
+  #    - run: |
+  #        echo ${{ needs.terraform.outputs.kube_config }} ${{ needs.terraform.outputs.ip_address }} ${{ needs.terraform.outputs.acr_login_server }}
