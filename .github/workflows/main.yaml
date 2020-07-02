@@ -47,7 +47,7 @@ jobs:
       GROUP_NAME: k-eco
       LOCATION: eastus
       CLUSTER_NAME: k-cluster
-      DOMAIN_NAME: $${{ PUBLIC_DOMAIN_NAME }}
+      DOMAIN_NAME: ${{ secrets.PUBLIC_DOMAIN_NAME }}
       ACR_NAME: kecoacr
       TFVARS_FILE: "workflow.tfvars"
     defaults:
