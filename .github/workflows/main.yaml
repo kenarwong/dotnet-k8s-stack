@@ -112,7 +112,8 @@ jobs:
       - name: 'terraform output'
         id: output
         run: |
-          echo "$(terraform output)"
+          terraform output > output.json
+          cat output.json
           #echo "Azure DNS name servers"
           #IP_ADDRESS="$(echo test)"
           #ACR_LOGIN_SERVER="$(terraform output acr_login_server)"
