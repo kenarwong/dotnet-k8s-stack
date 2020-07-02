@@ -80,7 +80,6 @@ jobs:
       - name: 'Set working directory'
         run: |
           echo "::set-env name=WORKING_DIRECTORY::$GITHUB_WORKSPACE/infrastructure/terraform/$PROVIDER/"
-          ls $WORKING_DIRECTORY
       
       - name: 'create tfvars file'
         run: |
@@ -99,7 +98,8 @@ jobs:
       - name: 'terraform fmt'
         id: fmt
         run: |
-          ls $WORKING_DIRECTORY
+          cd $WORKING_DIRECTORY
+          ls .
           terraform fmt
         continue-on-error: true
 
