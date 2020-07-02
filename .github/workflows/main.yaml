@@ -35,11 +35,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: 'Set working directory'
-        run: |
-          echo "::set-env name=WORKING_DIRECTORY::$GITHUB_WORKSPACE/infrastructure/terraform/$PROVIDER/backend"
-          cd $WORKING_DIRECTORY
-
       - name: 'Login via Azure CLI'
         uses: azure/login@v1
         with:
@@ -51,9 +46,8 @@ jobs:
         with:
           azcliversion: 2.8.0
           inlineScript: |
-            ls .
-            chmod +x setup-terraform-backend.sh
-            ./setup-terraform-backend.sh -g $TERRAFORM_BACKEND_GROUP_NAME -l $LOCATION --storage-account-name $STORAGE_ACCOUNT_NAME --storage-container-name $STORAGE_CONTAINER_NAME
+            chmod +x $GITHUB_WORKSPACE/infrastructure/terraform/$PROVIDER/backend/setup-terraform-backend.sh
+            $GITHUB_WORKSPACE/infrastructure/terraform/$PROVIDER/backend/setup-terraform-backend.sh -g $TERRAFORM_BACKEND_GROUP_NAME -l $LOCATION --storage-account-name $STORAGE_ACCOUNT_NAME --storage-container-name $STORAGE_CONTAINER_NAME
 
   terraform:
     needs: backend
@@ -86,7 +80,7 @@ jobs:
       - name: 'Set working directory'
         run: |
           echo "::set-env name=WORKING_DIRECTORY::$GITHUB_WORKSPACE/infrastructure/terraform/$PROVIDER/"
-          cd $WORKING_DIRECTORY
+          ls $WORKING_DIRECTORY
       
       - name: 'create tfvars file'
         run: |
@@ -104,7 +98,9 @@ jobs:
 
       - name: 'terraform fmt'
         id: fmt
-        run: terraform fmt
+        run: |
+          ls $WORKING_DIRECTORY
+          terraform fmt
         continue-on-error: true
 
       - name: 'terraform init'
