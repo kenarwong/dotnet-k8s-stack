@@ -69,7 +69,8 @@ module "acr" {
 # ---------------------------------------------------------------------------------------------------------------------
 
 output "kube_config" {
-  value = "${module.aks.kube_config}"
+  value     = "${module.aks.kube_config}"
+  sensitve  = true
 }
 
 output "ip_address" {
@@ -80,6 +81,6 @@ output "name_servers" {
   value = "${module.public.name_servers}"
 }
 
-output "login_server" {
+output "acr_login_server" {
   value = "${module.acr.login_server}"
 }

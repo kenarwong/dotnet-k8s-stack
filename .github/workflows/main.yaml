@@ -54,6 +54,11 @@ jobs:
     defaults:
       run:
         working-directory: ./infrastructure/terraform
+    outputs:
+      kube_config: ${{ steps.output.outputs.kube_config }}
+      ip_address: ${{ steps.output.outputs.ip_address }}
+      acr_login_server: ${{ steps.output.outputs.acr_login_server }}
+
     steps:
       - uses: actions/checkout@v2
       - uses: hashicorp/setup-terraform@v1
@@ -103,3 +108,24 @@ jobs:
         run: |
           terraform apply --auto-approve \
             -var-file "$TFVARS_FILE"
+
+      - name: 'terraform output'
+        id: output
+        run: |
+          echo "Azure DNS name servers"
+          terraform output name_servers
+          echo "::set-output name=kube_config::$(terraform output kube_config)"
+          echo "::set-output name=ip_address::$(terraform output ip_address)"
+          echo "::set-output name=acr_login_server::$(terraform output acr_login_server)"
+
+  docker:
+    needs: terraform
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./infrastructure/docker
+    steps:
+      - uses: actions/checkout@v2
+
+      - run: |
+          echo ${{ needs.terraform.outputs.kube_config }} ${{ needs.terraform.outputs.ip_address }} ${{ needs.terraform.outputs.acr_login_server }}
