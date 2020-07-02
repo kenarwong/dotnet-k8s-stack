@@ -38,6 +38,7 @@ jobs:
       - name: 'Set working directory'
         run: |
           echo "::set-env name=WORKING_DIRECTORY::$GITHUB_WORKSPACE/infrastructure/terraform/$PROVIDER/backend"
+          cd $WORKING_DIRECTORY
 
       - name: 'Login via Azure CLI'
         uses: azure/login@v1
@@ -50,7 +51,6 @@ jobs:
         with:
           azcliversion: 2.8.0
           inlineScript: |
-            ls $GITHUB_WORKSPACE/infrastructure/terraform/$PROVIDER/backend
             chmod +x $WORKING_DIRECTORY/setup-terraform-backend.sh
             $WORKING_DIRECTORY/setup-terraform-backend.sh -g $TERRAFORM_BACKEND_GROUP_NAME -l $LOCATION --storage-account-name $STORAGE_ACCOUNT_NAME --storage-container-name $STORAGE_CONTAINER_NAME
 
