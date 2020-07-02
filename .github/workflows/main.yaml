@@ -51,8 +51,9 @@ jobs:
         with:
           azcliversion: 2.8.0
           inlineScript: |
-            chmod +x $WORKING_DIRECTORY/setup-terraform-backend.sh
-            $WORKING_DIRECTORY/setup-terraform-backend.sh -g $TERRAFORM_BACKEND_GROUP_NAME -l $LOCATION --storage-account-name $STORAGE_ACCOUNT_NAME --storage-container-name $STORAGE_CONTAINER_NAME
+            ls .
+            chmod +x setup-terraform-backend.sh
+            ./setup-terraform-backend.sh -g $TERRAFORM_BACKEND_GROUP_NAME -l $LOCATION --storage-account-name $STORAGE_ACCOUNT_NAME --storage-container-name $STORAGE_CONTAINER_NAME
 
   terraform:
     needs: backend
