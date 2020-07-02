@@ -115,8 +115,8 @@ jobs:
           echo "Azure DNS name servers"
           terraform output name_servers
           echo "::set-output name=kube_config::test"
-          echo "::set-output name=ip_address::$(terraform output ip_address)"
-          echo "::set-output name=acr_login_server::$(terraform output acr_login_server)"
+          echo "::set-output name=ip_address::${{ terraform output ip_address }}"
+          echo "::set-output name=acr_login_server::${{ terraform output acr_login_server }}"
 
   docker:
     needs: terraform
