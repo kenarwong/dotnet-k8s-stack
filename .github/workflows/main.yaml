@@ -4,29 +4,145 @@ on:
   push:
     branches:
       - master
+      - dev
+
+env:
+  PROVIDER: azure
+  LOCATION: eastus
+  TERRAFORM_BACKEND_GROUP_NAME: k-eco-terraform
+  STORAGE_ACCOUNT_NAME: kecoterraform
+  STORAGE_CONTAINER_NAME: terraform
+  STORAGE_CONTAINER_KEY: terraform.tfstate
 
 jobs:
-  azure:
+  backend:
     runs-on: ubuntu-latest
     
     steps:
-    - uses: actions/checkout@v2
+      - name: 'Set environment to dev'
+        if: endsWith(github.ref, '/dev')
+        run: |
+          echo "::set-env name=ENVIRONMENT::dev"
+
+      - name: 'Set environment to prod'
+        if: endsWith(github.ref, '/master')
+        run: |
+          echo "::set-env name=ENVIRONMENT::prod"
+
+  backend:
+    runs-on: ubuntu-latest
     
-    - name: 'Login via Azure CLI'
-      uses: azure/login@v1
-      with:
-        creds: ${{ secrets.AZURE_CREDENTIALS }}
-        
-    - name: Azure CLI script file
-      env:
-        GROUP_NAME: k-eco
-        LOCATION: eastus
-        CLUSTER_NAME: k-cluster
-        DOMAIN_NAME: ${{ secrets.PUBLIC_DOMAIN_NAME }}
-        ACRNAME: kecocr
-      uses: azure/CLI@v1
-      with:
-        azcliversion: 2.8.0
-        inlineScript: |
-          chmod +x $GITHUB_WORKSPACE/azure/azure-setup.sh
-          $GITHUB_WORKSPACE/azure/azure-setup.sh -g $GROUP_NAME -l $LOCATION -n $CLUSTER_NAME --domain-name $DOMAIN_NAME --acr-name $ACRNAME --debug
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: 'Login via Azure CLI'
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      
+      - name: 'Azure CLI script file'
+        id: setup_terraform_backend
+        uses: azure/CLI@v1
+        with:
+          azcliversion: 2.8.0
+          inlineScript: |
+            chmod +x $GITHUB_WORKSPACE/infrastructure/terraform/backend/$PROVIDER/setup-terraform-backend.sh
+            $GITHUB_WORKSPACE/infrastructure/terraform/backend/$PROVIDER/setup-terraform-backend.sh -g $TERRAFORM_BACKEND_GROUP_NAME -l $LOCATION --storage-account-name $STORAGE_ACCOUNT_NAME --storage-container-name $STORAGE_CONTAINER_NAME
+
+  terraform:
+    needs: backend
+    runs-on: ubuntu-latest
+    env:
+      ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+      ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+      ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+      ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+      K8S_CLIENT_ID: ${{ secrets.K8S_CLIENT_ID }}
+      K8S_CLIENT_SECRET: ${{ secrets.K8S_CLIENT_SECRET }}
+      K8S_OBJECT_ID: ${{ secrets.K8S_OBJECT_ID }}
+      GROUP_NAME: k-eco
+      CLUSTER_NAME: k-cluster
+      DOMAIN_NAME: ${{ secrets.PUBLIC_DOMAIN_NAME }}
+      ACR_NAME: kecoacr
+      TFVARS_FILE: "workflow.tfvars"
+    defaults:
+      run:
+        working-directory: ./infrastructure/terraform
+    outputs:
+      #kube_config: ${{ steps.output.outputs.kube_config }}
+      ip_address: ${{ steps.output.outputs.ip_address }}
+      acr_login_server: ${{ steps.output.outputs.acr_login_server }}
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 0.12.28
+          terraform_wrapper: false
+      
+      - name: 'create tfvars file'
+        run: |
+          cat <<EOF > $TFVARS_FILE
+          resource_group_name         = "$GROUP_NAME"
+          location                    = "$LOCATION"
+          cluster_name                = "$CLUSTER_NAME"
+          domain_name                 = "$DOMAIN_NAME"
+          acr_name                    = "$ACR_NAME"
+          client_id                   = "$K8S_CLIENT_ID"
+          client_secret               = "$K8S_CLIENT_SECRET"
+          service_principal_object_id = "$K8S_OBJECT_ID"
+          environment                 = "$ENVIRONMENT"
+          EOF
+
+      - name: 'terraform fmt'
+        id: fmt
+        run: terraform fmt
+        continue-on-error: true
+
+      - name: 'terraform init'
+        id: init
+        run: |
+          terraform init \
+            -backend-config="resource_group_name=$TERRAFORM_BACKEND_GROUP_NAME" \
+            -backend-config="storage_account_name=$STORAGE_ACCOUNT_NAME" \
+            -backend-config="container_name=$STORAGE_CONTAINER_NAME" \
+            -backend-config="key=$STORAGE_CONTAINER_KEY" \
+      
+      - name: 'terraform validate'
+        id: validate
+        run: terraform validate -no-color
+      
+      - name: 'terraform plan'
+        id: plan
+        run: |
+          terraform plan -no-color \
+            -var-file "$TFVARS_FILE"
+      
+      - name: 'terraform apply'
+        id: apply
+        run: |
+          terraform apply --auto-approve \
+            -var-file "$TFVARS_FILE"
+
+      - name: 'terraform output'
+        id: output
+        run: |
+          echo "Azure DNS name servers"
+          terraform output name_servers
+          #KUBE_CONFIG="$(terraform output kube_config)"
+          IP_ADDRESS="$(terraform output ip_address)"
+          ACR_LOGIN_SERVER="$(terraform output acr_login_server)"
+          echo "::set-output name=ip_address::"$IP_ADDRESS""
+          echo "::set-output name=acr_login_server::"$ACR_LOGIN_SERVER""
+
+  docker:
+    needs: terraform
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./docker
+    steps:
+      - uses: actions/checkout@v2
+
+      - run: |
+          echo "${{ needs.terraform.outputs.acr_login_server }}"
