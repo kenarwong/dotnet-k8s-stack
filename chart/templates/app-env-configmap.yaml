@@ -1,6 +1,0 @@
-apiVersion: v1
-data:
-  WEB_API_URL: http://api.{{ .Values.ingress.DOMAIN_NAME }}/api/
-kind: ConfigMap
-metadata:
-  name: {{ .Values.app.configMap.name }}

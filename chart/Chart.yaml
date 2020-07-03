@@ -1,7 +1,0 @@
-name: dotnet-k8s-stack
-version: 1.0.0
-
-dependencies:
-  - name: nginx-ingress
-    version: ~1.40
-    repository: https://kubernetes-charts.storage.googleapis.com

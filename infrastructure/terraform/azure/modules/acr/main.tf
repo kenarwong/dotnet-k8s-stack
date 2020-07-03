@@ -16,10 +16,3 @@ resource "azurerm_role_assignment" "acr-pull-role" {
   role_definition_name = "acrPull"
   principal_id         = var.service_principal
 }
-
-## Create ACR Role Assignment
-resource "azurerm_role_assignment" "acr-push-role" {
-  scope                = azurerm_container_registry.acr.id
-  role_definition_name = "acrPush"
-  principal_id         = var.service_principal
-}
