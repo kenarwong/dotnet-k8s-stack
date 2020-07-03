@@ -1,4 +1,4 @@
-environment: dev
+environment: dev # Replace
 
 nginx-ingress:
   controller:
@@ -7,8 +7,8 @@ nginx-ingress:
       beta.kubernetes.io/os: linux
     service:
       annotations:
-        service.beta.kubernetes.io/azure-dns-label-name: k-cluster-ingress
-      loadBalancerIP: REPLACE_WITH_STATIC_IP
+        service.beta.kubernetes.io/azure-dns-label-name: k-cluster-ingress # Replace
+      loadBalancerIP: REPLACE_WITH_STATIC_IP # Replace
   defaultBackend:
     nodeSelector:
       beta.kubernetes.io/os: linux
@@ -16,7 +16,7 @@ nginx-ingress:
 ingress:
   name: nginx-ingress
   class: nginx
-  DOMAIN_NAME: kenrhwang.com
+  DOMAIN_NAME: kenrhwang.com # Replace
 
 data:
   deployment:
@@ -27,7 +27,7 @@ data:
         fsGroup: 10001
       sqlBackupContainer:
         image:
-          name: kecoacr.azurecr.io/adventureworks2017-mssql2019-ubuntu16.04-backup-only:1.0
+          name: kecoacr.azurecr.io/adventureworks2017-mssql2019-ubuntu16.04-backup-only:1.0 # Replace
           pullPolicy: Always
       container:
         image:
@@ -36,10 +36,10 @@ data:
   secret:
     name: mssql-login
     values:
-      SA_PASSWORD: TXlDMG05bCZ4UEBzc3cwcmQ=
-      WEB_API_LOGIN: V2ViQXBpTG9naW4=
-      WEB_API_LOGIN_PASSWORD: PzhkNUViRFV+antfRWFd
-      WEB_API_LOGIN_USER: V2ViQXBpVXNlcg==
+      SA_PASSWORD: TXlDMG05bCZ4UEBzc3cwcmQ= # Replace
+      WEB_API_LOGIN: V2ViQXBpTG9naW4= # Replace
+      WEB_API_LOGIN_PASSWORD: PzhkNUViRFV+antfRWFd # Replace
+      WEB_API_LOGIN_USER: V2ViQXBpVXNlcg== # Replace
   service:
     name: mssql-service
     port: 1433
@@ -75,13 +75,13 @@ api:
           name: busybox
       container:
         image:
-          name: kecoacr.azurecr.io/adventureworks-api-dotnet3.1:1.0
+          name: kecoacr.azurecr.io/adventureworks-api-dotnet3.1:1.0 # Replace
           pullPolicy: Always
         containerPort: 80
   secret:
     name: api-appsettings
     values:
-      appSettingsJson: ew0KICAiTG9nZ2luZyI6IHsNCiAgICAiTG9nTGV2ZWwiOiB7DQogICAgICAiRGVmYXVsdCI6ICJJbmZvcm1hdGlvbiIsDQogICAgICAiTWljcm9zb2Z0IjogIldhcm5pbmciLA0KICAgICAgIk1pY3Jvc29mdC5Ib3N0aW5nLkxpZmV0aW1lIjogIkluZm9ybWF0aW9uIg0KICAgIH0NCiAgfSwNCiAgIkFsbG93ZWRIb3N0cyI6ICIqIg0KfQ0K
+      appSettingsJson: ew0KICAiTG9nZ2luZyI6IHsNCiAgICAiTG9nTGV2ZWwiOiB7DQogICAgICAiRGVmYXVsdCI6ICJJbmZvcm1hdGlvbiIsDQogICAgICAiTWljcm9zb2Z0IjogIldhcm5pbmciLA0KICAgICAgIk1pY3Jvc29mdC5Ib3N0aW5nLkxpZmV0aW1lIjogIkluZm9ybWF0aW9uIg0KICAgIH0NCiAgfSwNCiAgIkFsbG93ZWRIb3N0cyI6ICIqIg0KfQ0K # Replace
   service:
     name: dotnet-api-service
     port: 80
@@ -100,7 +100,7 @@ app:
           name: busybox
       container:
         image:
-          name: kecoacr.azurecr.io/adventureworks-app-dotnet3.1:1.0
+          name: kecoacr.azurecr.io/adventureworks-app-dotnet3.1:1.0 # Replace
           pullPolicy: Always
         containerPort: 80
   configMap:

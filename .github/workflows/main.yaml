@@ -1,4 +1,4 @@
-name: infrastructure
+name: dotnet-k8s-stack
 
 on:
   push:
@@ -65,7 +65,7 @@ jobs:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       
       - name: 'Azure CLI script file'
-        id: setup_terraform_backend
+        id: setup-terraform-backend
         uses: azure/CLI@v1
         with:
           azcliversion: 2.8.0
@@ -73,7 +73,7 @@ jobs:
             chmod +x $GITHUB_WORKSPACE/infrastructure/terraform/$PROVIDER/backend/setup-terraform-backend.sh
             $GITHUB_WORKSPACE/infrastructure/terraform/$PROVIDER/backend/setup-terraform-backend.sh -g $TERRAFORM_BACKEND_GROUP_NAME -l $LOCATION --storage-account-name $STORAGE_ACCOUNT_NAME --storage-container-name $STORAGE_CONTAINER_NAME
 
-  terraform:
+  infrastructure:
     needs: backend
     runs-on: ubuntu-latest
     env:
@@ -158,8 +158,8 @@ jobs:
           echo "::set-output name=ip_address::"$IP_ADDRESS""
           echo "::set-output name=acr_login_server::"$ACR_LOGIN_SERVER""
 
-  docker:
-    needs: terraform
+  image:
+    needs: infrastructure
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -199,3 +199,28 @@ jobs:
           cd app
           docker build . -t ${{ needs.terraform.outputs.acr_login_server }}/$APP_IMAGE_NAME:$APP_IMAGE_VERSION
           docker push ${{ needs.terraform.outputs.acr_login_server }}/$APP_IMAGE_NAME:$APP_IMAGE_VERSION
+
+  orchestration:
+    needs: image
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./orchestration
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: 'Login via Azure CLI'
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      
+      - name: 'Azure CLI script file'
+        id: get-aks-credentials
+        uses: azure/CLI@v1
+        with:
+          azcliversion: 2.8.0
+          inlineScript: |
+            az aks get-credentials -g $GROUP_NAME -n $CLUSTER_NAME --overwrite
+
+      #- name: 'helm install'
+      #  id: install-helm

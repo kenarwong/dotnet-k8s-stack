@@ -1,3 +1,32 @@
+# General files for the project
+pkg/*
+*.pyc
+bin/*
+.project
+/.bin
+/_test/secrets/*.json
+
+# Vscode files
+.vscode
+
+# Emacs save files
+*~
+\#*\#
+.\#*
+
+# Vim-related files
+[._]*.s[a-w][a-z]
+[._]s[a-w][a-z]
+*.un~
+Session.vim
+.netrwhist
+
+# Chart dependencies
+**/charts/*.tgz
+
+.history
+
+# Terraform
 .terraform/
 terraform.tfstate
 terraform.tfstate.backup
