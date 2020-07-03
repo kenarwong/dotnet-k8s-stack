@@ -5,20 +5,44 @@ on:
     branches:
       - master
       - dev
+      - feature/**
 
 env:
+  ENVIRONMENT: dev
   PROVIDER: azure
   LOCATION: eastus
   TERRAFORM_BACKEND_GROUP_NAME: k-eco-terraform
   STORAGE_ACCOUNT_NAME: kecoterraform
   STORAGE_CONTAINER_NAME: terraform
   STORAGE_CONTAINER_KEY: terraform.tfstate
+  GROUP_NAME: k-eco
+  CLUSTER_NAME: k-cluster
+  ACR_NAME: kecoacr
+  ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
+  ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
+  ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+  ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+  DOMAIN_NAME: ${{ secrets.PUBLIC_DOMAIN_NAME }}
+  K8S_CLIENT_ID: ${{ secrets.K8S_CLIENT_ID }}
+  K8S_CLIENT_SECRET: ${{ secrets.K8S_CLIENT_SECRET }}
+  K8S_OBJECT_ID: ${{ secrets.K8S_OBJECT_ID }}
+  SQL_IMAGE_NAME: "adventureworks2017-mssql2019-ubuntu16.04-backup-only"
+  SQL_IMAGE_VERSION: "1.0"
+  API_IMAGE_NAME: "adventureworks-api-dotnet3.1"
+  API_IMAGE_VERSION: "1.0"
+  APP_IMAGE_NAME: "adventureworks-app-dotnet3.1"
+  APP_IMAGE_VERSION: "1.0"
 
 jobs:
   set-environment:
     runs-on: ubuntu-latest
     
     steps:
+      - name: 'Set environment to dev'
+        if: contains(github.ref, 'feature')
+        run: |
+          echo "::set-env name=ENVIRONMENT::dev"
+
       - name: 'Set environment to dev'
         if: endsWith(github.ref, '/dev')
         run: |
@@ -53,17 +77,6 @@ jobs:
     needs: backend
     runs-on: ubuntu-latest
     env:
-      ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
-      ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
-      ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
-      ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
-      K8S_CLIENT_ID: ${{ secrets.K8S_CLIENT_ID }}
-      K8S_CLIENT_SECRET: ${{ secrets.K8S_CLIENT_SECRET }}
-      K8S_OBJECT_ID: ${{ secrets.K8S_OBJECT_ID }}
-      GROUP_NAME: k-eco
-      CLUSTER_NAME: k-cluster
-      DOMAIN_NAME: ${{ secrets.PUBLIC_DOMAIN_NAME }}
-      ACR_NAME: kecoacr
       TFVARS_FILE: "workflow.tfvars"
     outputs:
       #kube_config: ${{ steps.output.outputs.kube_config }}
@@ -150,9 +163,39 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./docker
+        working-directory: ./image
     steps:
       - uses: actions/checkout@v2
 
-      - run: |
-          echo "${{ needs.terraform.outputs.acr_login_server }}"
+      - name: 'Login to Azure ACR'
+        id: acr-login
+        run: |
+          docker login "${{ needs.terraform.outputs.acr_login_server }}" --username $ARM_CLIENT_ID --password $ARM_CLIENT_SECRET
+
+      - name: 'Get backup'
+        id: get-backup
+        run: |
+          cd sql
+          chmod +x run-to-get-bak.sh
+          ./run-to-get-bak.sh 
+
+      - name: 'Build sql image'
+        id: build-sql-image
+        run: |
+          cd sql
+          docker build . -t ${{ needs.terraform.outputs.acr_login_server }}/$SQL_IMAGE_NAME:$SQL_IMAGE_VERSION
+          docker push ${{ needs.terraform.outputs.acr_login_server }}/$SQL_IMAGE_NAME:$SQL_IMAGE_VERSION
+
+      - name: 'Build api image'
+        id: build-api-image
+        run: |
+          cd api
+          docker build . -t ${{ needs.terraform.outputs.acr_login_server }}/$API_IMAGE_NAME:$API_IMAGE_VERSION
+          docker push ${{ needs.terraform.outputs.acr_login_server }}/$API_IMAGE_NAME:$API_IMAGE_VERSION
+
+      - name: 'Build app image'
+        id: build-app-image
+        run: |
+          cd app
+          docker build . -t ${{ needs.terraform.outputs.acr_login_server }}/$APP_IMAGE_NAME:$APP_IMAGE_VERSION
+          docker push ${{ needs.terraform.outputs.acr_login_server }}/$APP_IMAGE_NAME:$APP_IMAGE_VERSION
