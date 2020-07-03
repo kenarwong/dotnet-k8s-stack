@@ -1,18 +1,32 @@
-# General files for the project
-pkg/*
+project.lock.json
+.DS_Store
 *.pyc
-bin/*
-.project
-/.bin
-/_test/secrets/*.json
+nupkg/
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+build/
+bld/
+[Bb]in/
+[Oo]bj/
+[Oo]ut/
+msbuild.log
+msbuild.err
+msbuild.wrn
 
 # Vscode files
 .vscode
 
-# Emacs save files
-*~
-\#*\#
-.\#*
+# User-specific files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
 
 # Vim-related files
 [._]*.s[a-w][a-z]
