@@ -169,11 +169,8 @@ jobs:
 
       - name: 'Login to Azure ACR'
         id: acr-login
-        uses: azure/CLI@v1
-        with:
-          azcliversion: 2.8.0
-          inlineScript: |
-            docker login "${{ needs.terraform.outputs.acr_login_server }}" --username $K8S_CLIENT_ID --password $K8S_CLIENT_SECRET
+        run: |
+          docker login "${{ needs.terraform.outputs.acr_login_server }}" --username $K8S_CLIENT_ID --password $K8S_CLIENT_SECRET
 
       #- uses: azure/docker-login@v1
       #  with:
