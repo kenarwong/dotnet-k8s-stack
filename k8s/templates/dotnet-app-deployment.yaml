@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.app.deployment.name }}
+  labels:
+    app.kubernetes.io/name: {{ .Values.app.deployment.name }}
+    app.kubernetes.io/part-of: {{ .Release.Name }}
+    app.kubernetes.io/component: app
+spec:
+  replicas: {{ .Values.app.deployment.pod.replicas }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ .Values.app.deployment.pod.name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ .Values.app.deployment.pod.name }}
+        app.kubernetes.io/part-of: {{ .Release.Name }}
+        app.kubernetes.io/component: app
+    spec:
+      initContainers:
+        - name: check-dotnet-api-service
+          image: {{ .Values.app.deployment.pod.initContainer.image.name }}
+          command: 
+            - sh
+            - -c
+          args:
+            - |
+              until nslookup {{ .Values.api.service.name }};
+              do
+                echo "Waiting for {{ .Values.api.service.name }}";
+                sleep 2;
+              done
+      containers:
+        - name: dotnet-app
+          image: {{ .Values.app.deployment.pod.container.image.name }}
+          imagePullPolicy: {{ .Values.app.deployment.pod.container.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.app.deployment.pod.container.containerPort }}
+          env:
+            - name: APP_ENVIRONMENT
+              value: {{ .Values.environment }}
+          envFrom:
+            - configMapRef:
+                name: {{ .Values.app.configMap.name }}
+              #    volumeMounts:
+              #      - name: appsettings
+              #        mountPath: /app/settings
+              #volumes:
+              #  - name: appsettings
+              #    secret:
+              #      secretName: app-appsettings
+          lifecycle:
+            postStart:
+              exec:
+                command:
+                  - sh
+                  - -c
+                  - |
+                    apt-get update && apt-get install gettext-base
+                    envsubst < {{ .Values.app.dotnet.app.envPath }}/env.template.js > {{ .Values.app.dotnet.app.envPath }}/env.js
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.app.service.name }}
+  labels:
+    app.kubernetes.io/name: {{ .Values.app.service.name }}
+    app.kubernetes.io/part-of: {{ .Release.Name }}
+    app.kubernetes.io/component: app
+spec:
+  selector:
+    app.kubernetes.io/name: {{ .Values.app.deployment.pod.name }}
+  ports:
+    - protocol: TCP
+      port: {{ .Values.app.service.port }}
+      targetPort: {{ .Values.app.deployment.pod.container.containerPort }}
