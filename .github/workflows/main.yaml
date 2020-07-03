@@ -177,7 +177,7 @@ jobs:
 
       - name: 'Get backup'
         id: get-backup
-        run: |
+          run: |
           cd sql
           chmod +x run-to-get-bak.sh
           ./run-to-get-bak.sh 
