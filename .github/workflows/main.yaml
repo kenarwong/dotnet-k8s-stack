@@ -252,4 +252,4 @@ jobs:
       - name: 'helm install'
         id: helm-install
         run: |
-          helm install -f $HELM_VALUES_FILE $HELM_INSTALL_NAME -n $ENVIRONMENT --create-namespace --atomic
+          helm install -f $HELM_VALUES_FILE $HELM_INSTALL_NAME -n $ENVIRONMENT --create-namespace --atomic .
