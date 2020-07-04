@@ -63,7 +63,7 @@ jobs:
       - name: 'Login via Azure CLI'
         uses: azure/login@v1
         with:
-          creds: ${{ toJSON($AZURE_CREDENTIALS) }}
+          creds: ${{ toJSON(AZURE_CREDENTIALS) }}
       
       - name: 'Azure CLI script file'
         id: setup-terraform-backend
@@ -213,7 +213,7 @@ jobs:
       - name: 'Login via Azure CLI'
         uses: azure/login@v1
         with:
-          creds: ${{ toJSON($AZURE_CREDENTIALS) }}
+          creds: ${{ toJSON(AZURE_CREDENTIALS) }}
       
       - name: 'Azure CLI script file'
         id: get-aks-credentials
