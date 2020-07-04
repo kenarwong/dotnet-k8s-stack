@@ -222,6 +222,30 @@ jobs:
           inlineScript: |
             az aks get-credentials -g $GROUP_NAME -n $CLUSTER_NAME --overwrite
 
+      - name: 'Replace Helm values'
+        id: replace-helm-values
+        run: |
+          declare -A variables
+          variables=( 
+            [%%ENVIRONMENT%%]=$ENVIRONMENT
+            [%%CLUSTER_NAME%%]=$CLUSTER_NAME
+            [%%IP_ADDRESS%%]=$IP_ADDRESS
+            [%%DOMAIN_NAME%%]=$DOMAIN_NAME
+            [%%ACR_LOGIN_SERVER%%]=$ACR_LOGIN_SERVER
+            [%%SQL_IMAGE_NAME%%]=$SQL_IMAGE_NAME
+            [%%SQL_IMAGE_VERSION%%]=$SQL_IMAGE_VERSION
+            [%%API_IMAGE_NAME%%]=$API_IMAGE_NAME
+            [%%API_IMAGE_VERSION%%]=$API_IMAGE_VERSION
+            [%%APP_IMAGE_NAME%%]=$APP_IMAGE_NAME
+            [%%APP_IMAGE_VERSION%%]=$APP_IMAGE_VERSION
+          )
+          for i in "${!variables[@]}"
+          do
+            search=$i
+            replace=${variables[$i]}
+            sed -i "sed|${search}|${replace}|g" values.yaml
+          done
+
       #- name: 'helm install'
       #  id: helm-install
       #  run: |
