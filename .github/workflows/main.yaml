@@ -249,6 +249,11 @@ jobs:
             sed -i "s|${search}|${replace}|g" $HELM_VALUES_FILE
           done
 
+      - name: 'helm dependency build'
+        id: helm-dependency-build
+        run: |
+          helm dependency build .
+
       - name: 'helm install'
         id: helm-install
         run: |
