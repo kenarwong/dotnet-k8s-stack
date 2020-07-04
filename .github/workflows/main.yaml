@@ -18,6 +18,7 @@ env:
   GROUP_NAME: k-eco
   CLUSTER_NAME: k-cluster
   ACR_NAME: kecoacr
+  AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
   ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
   ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
   ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
@@ -62,7 +63,7 @@ jobs:
       - name: 'Login via Azure CLI'
         uses: azure/login@v1
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          creds: $AZURE_CREDENTIALS
       
       - name: 'Azure CLI script file'
         id: setup-terraform-backend
@@ -212,7 +213,7 @@ jobs:
       - name: 'Login via Azure CLI'
         uses: azure/login@v1
         with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          creds: $AZURE_CREDENTIALS
       
       - name: 'Azure CLI script file'
         id: get-aks-credentials
