@@ -65,14 +65,11 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       
-      - name: 'Azure CLI script file'
+      - name: 'Set-up terraform backend'
         id: setup-terraform-backend
-        uses: azure/CLI@v1
-        with:
-          azcliversion: 2.8.0
-          inlineScript: |
-            chmod +x $GITHUB_WORKSPACE/infrastructure/terraform/$PROVIDER/backend/setup-terraform-backend.sh
-            $GITHUB_WORKSPACE/infrastructure/terraform/$PROVIDER/backend/setup-terraform-backend.sh -g $TERRAFORM_BACKEND_GROUP_NAME -l $LOCATION --storage-account-name $STORAGE_ACCOUNT_NAME --storage-container-name $STORAGE_CONTAINER_NAME
+        run: |
+          chmod +x $GITHUB_WORKSPACE/infrastructure/terraform/$PROVIDER/backend/setup-terraform-backend.sh
+          $GITHUB_WORKSPACE/infrastructure/terraform/$PROVIDER/backend/setup-terraform-backend.sh -g $TERRAFORM_BACKEND_GROUP_NAME -l $LOCATION --storage-account-name $STORAGE_ACCOUNT_NAME --storage-container-name $STORAGE_CONTAINER_NAME
 
   infrastructure:
     needs: backend
@@ -80,7 +77,6 @@ jobs:
     env:
       TFVARS_FILE: "workflow.tfvars"
     outputs:
-      #kube_config: ${{ steps.output.outputs.kube_config }}
       ip_address: ${{ steps.output.outputs.ip_address }}
       acr_login_server: ${{ steps.output.outputs.acr_login_server }}
 
@@ -243,11 +239,6 @@ jobs:
 
           chmod +x replace-helm-tokens.sh
           ./replace-helm-tokens.sh -f $HELM_VARIABLES_FILE --template-file $HELM_TEMPLATE_FILE --output-file $HELM_VALUES_FILE
-
-      #- name: 'helm repo add'
-      #  id: helm-repo-add
-      #  run: |
-      #    helm repo add nginx-ingress https://kubernetes-charts.storage.googleapis.com
 
       - name: 'helm dependency update'
         id: helm-dependency-update
