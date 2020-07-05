@@ -232,7 +232,7 @@ jobs:
             CLUSTER_NAME: $CLUSTER_NAME
             IP_ADDRESS: $IP_ADDRESS
             DOMAIN_NAME: $DOMAIN_NAME
-            ACR_LOGIN_SERVER: $ACR_LOGIN_SERVER
+            ACR_LOGIN_SERVER: ${{ needs.infrastructure.outputs.acr_login_server }}
             SQL_IMAGE_NAME: $SQL_IMAGE_NAME
             SQL_IMAGE_VERSION: $SQL_IMAGE_VERSION
             API_IMAGE_NAME: $API_IMAGE_NAME
@@ -257,4 +257,4 @@ jobs:
       - name: 'helm install'
         id: helm-install
         run: |
-          helm install -f $HELM_VALUES_FILE $HELM_INSTALL_NAME .
+          helm upgrade -i -f $HELM_VALUES_FILE $HELM_INSTALL_NAME .
