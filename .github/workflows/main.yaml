@@ -57,7 +57,8 @@ jobs:
 
       - name: 'Output environment'
         id: output
-        echo "::set-output name=environment::$ENVIRONMENT"
+        run: |
+          echo "::set-output name=environment::$ENVIRONMENT"
 
   backend:
     runs-on: ubuntu-latest
