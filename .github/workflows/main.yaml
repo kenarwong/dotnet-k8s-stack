@@ -202,7 +202,7 @@ jobs:
   #        docker push ${{ needs.infrastructure.outputs.acr_login_server }}/$APP_IMAGE_NAME:$APP_IMAGE_VERSION
 
   orchestration:
-    #needs: image
+    needs: infrastructure
     runs-on: ubuntu-latest
     env:
       HELM_TEMPLATE_FILE: "template.yaml"
@@ -258,7 +258,7 @@ jobs:
       - name: 'helm dependency update'
         id: helm-dependency-update
         run: |
-          helm dependency update nginx-ingress https://kubernetes-charts.storage.googleapis.com
+          helm dependency update
 
       - name: 'helm install'
         id: helm-install
