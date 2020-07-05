@@ -159,52 +159,53 @@ jobs:
           echo "::set-output name=ip_address::"$IP_ADDRESS""
           echo "::set-output name=acr_login_server::"$ACR_LOGIN_SERVER""
 
-  image:
-    needs: infrastructure
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./image
-    steps:
-      - uses: actions/checkout@v2
+  #image:
+  #  needs: infrastructure
+  #  runs-on: ubuntu-latest
+  #  defaults:
+  #    run:
+  #      working-directory: ./image
+  #  steps:
+  #    - uses: actions/checkout@v2
 
-      - name: 'Login to Azure ACR'
-        id: acr-login
-        run: |
-          docker login "${{ needs.infrastructure.outputs.acr_login_server }}" --username $ARM_CLIENT_ID --password $ARM_CLIENT_SECRET
+  #    - name: 'Login to Azure ACR'
+  #      id: acr-login
+  #      run: |
+  #        docker login "${{ needs.infrastructure.outputs.acr_login_server }}" --username $ARM_CLIENT_ID --password $ARM_CLIENT_SECRET
 
-      - name: 'Get backup'
-        id: get-backup
-        run: |
-          cd sql
-          chmod +x run-to-get-bak.sh
-          ./run-to-get-bak.sh 
+  #    - name: 'Get backup'
+  #      id: get-backup
+  #      run: |
+  #        cd sql
+  #        chmod +x run-to-get-bak.sh
+  #        ./run-to-get-bak.sh 
 
-      - name: 'Build sql image'
-        id: build-sql-image
-        run: |
-          cd sql
-          docker build . -t ${{ needs.infrastructure.outputs.acr_login_server }}/$SQL_IMAGE_NAME:$SQL_IMAGE_VERSION
-          docker push ${{ needs.infrastructure.outputs.acr_login_server }}/$SQL_IMAGE_NAME:$SQL_IMAGE_VERSION
+  #    - name: 'Build sql image'
+  #      id: build-sql-image
+  #      run: |
+  #        cd sql
+  #        docker build . -t ${{ needs.infrastructure.outputs.acr_login_server }}/$SQL_IMAGE_NAME:$SQL_IMAGE_VERSION
+  #        docker push ${{ needs.infrastructure.outputs.acr_login_server }}/$SQL_IMAGE_NAME:$SQL_IMAGE_VERSION
 
-      - name: 'Build api image'
-        id: build-api-image
-        run: |
-          cd api
-          docker build . -t ${{ needs.infrastructure.outputs.acr_login_server }}/$API_IMAGE_NAME:$API_IMAGE_VERSION
-          docker push ${{ needs.infrastructure.outputs.acr_login_server }}/$API_IMAGE_NAME:$API_IMAGE_VERSION
+  #    - name: 'Build api image'
+  #      id: build-api-image
+  #      run: |
+  #        cd api
+  #        docker build . -t ${{ needs.infrastructure.outputs.acr_login_server }}/$API_IMAGE_NAME:$API_IMAGE_VERSION
+  #        docker push ${{ needs.infrastructure.outputs.acr_login_server }}/$API_IMAGE_NAME:$API_IMAGE_VERSION
 
-      - name: 'Build app image'
-        id: build-app-image
-        run: |
-          cd app
-          docker build . -t ${{ needs.infrastructure.outputs.acr_login_server }}/$APP_IMAGE_NAME:$APP_IMAGE_VERSION
-          docker push ${{ needs.infrastructure.outputs.acr_login_server }}/$APP_IMAGE_NAME:$APP_IMAGE_VERSION
+  #    - name: 'Build app image'
+  #      id: build-app-image
+  #      run: |
+  #        cd app
+  #        docker build . -t ${{ needs.infrastructure.outputs.acr_login_server }}/$APP_IMAGE_NAME:$APP_IMAGE_VERSION
+  #        docker push ${{ needs.infrastructure.outputs.acr_login_server }}/$APP_IMAGE_NAME:$APP_IMAGE_VERSION
 
   orchestration:
-    needs: image
-    runs-on: ubuntu-20.04
+    #needs: image
+    runs-on: ubuntu-latest
     env:
+      HELM_TEMPLATE_FILE: "template.yaml"
       HELM_VALUES_FILE: "values.yaml"
     defaults:
       run:
@@ -246,13 +247,18 @@ jobs:
           do
             search=$i
             replace=${variables[$i]}
-            sed -i "s|${search}|${replace}|g" $HELM_VALUES_FILE
+            sed "s|${search}|${replace}|g" $HELM_TEMPLATE_FILE > $HELM_VALUES_FILE
           done
 
-      - name: 'helm dependency build'
-        id: helm-dependency-build
+      - name: 'helm repo add'
+        id: helm-repo-add
         run: |
-          helm dependency build .
+          helm repo add nginx-ingress https://kubernetes-charts.storage.googleapis.com
+
+      - name: 'helm dependency update'
+        id: helm-dependency-update
+        run: |
+          helm dependency update nginx-ingress https://kubernetes-charts.storage.googleapis.com
 
       - name: 'helm install'
         id: helm-install
