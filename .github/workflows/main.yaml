@@ -149,7 +149,6 @@ jobs:
           cd $WORKING_DIRECTORY
           echo "Azure DNS name servers"
           terraform output name_servers
-          #KUBE_CONFIG="$(terraform output kube_config)"
           IP_ADDRESS="$(terraform output ip_address)"
           ACR_LOGIN_SERVER="$(terraform output acr_login_server)"
           echo "::set-output name=ip_address::"$IP_ADDRESS""
@@ -198,7 +197,7 @@ jobs:
           docker push ${{ needs.infrastructure.outputs.acr_login_server }}/$APP_IMAGE_NAME:$APP_IMAGE_VERSION
 
   orchestration:
-    needs: infrastructure
+    needs: [image, infrastructure]
     runs-on: ubuntu-latest
     env:
       HELM_VARIABLES_FILE: "vars.yaml"
