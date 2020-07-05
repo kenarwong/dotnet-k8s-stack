@@ -244,10 +244,10 @@ jobs:
           chmod +x replace-helm-tokens.sh
           ./replace-helm-tokens.sh -f $HELM_VARIABLES_FILE --template-file $HELM_TEMPLATE_FILE --output-file $HELM_VALUES_FILE
 
-      - name: 'helm repo add'
-        id: helm-repo-add
-        run: |
-          helm repo add nginx-ingress https://kubernetes-charts.storage.googleapis.com
+      #- name: 'helm repo add'
+      #  id: helm-repo-add
+      #  run: |
+      #    helm repo add nginx-ingress https://kubernetes-charts.storage.googleapis.com
 
       - name: 'helm dependency update'
         id: helm-dependency-update
