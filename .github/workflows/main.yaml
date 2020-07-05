@@ -206,7 +206,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       HELM_VARIABLES_FILE: "vars.yaml"
-      HELM_TEMPLATE_FILE: "template.yaml"
+      HELM_TEMPLATE_FILE: "values-template.yaml"
       HELM_VALUES_FILE: "values.yaml"
     defaults:
       run:
@@ -257,4 +257,4 @@ jobs:
       - name: 'helm install'
         id: helm-install
         run: |
-          helm upgrade -i -f $HELM_VALUES_FILE $HELM_INSTALL_NAME .
+          helm upgrade -i -f $HELM_VALUES_FILE $HELM_INSTALL_NAME --create-namespace -n $ENVIRONMENT --atomic .
