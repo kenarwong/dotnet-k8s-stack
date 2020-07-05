@@ -8,7 +8,6 @@ on:
       - feature/**
 
 env:
-  ENVIRONMENT: dev
   PROVIDER: azure
   LOCATION: eastus
   TERRAFORM_BACKEND_GROUP_NAME: k-eco-terraform
