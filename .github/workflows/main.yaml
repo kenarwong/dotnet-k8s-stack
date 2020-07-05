@@ -223,7 +223,6 @@ jobs:
         id: get-aks-credentials
         run: |
             az aks get-credentials -g $GROUP_NAME -n $CLUSTER_NAME --overwrite
-            kubectl config view --raw >~/.kube/config
 
       - name: 'Replace Helm tokens'
         id: replace-helm-tokens
@@ -258,4 +257,5 @@ jobs:
       - name: 'helm install'
         id: helm-install
         run: |
-          helm upgrade -i -f $HELM_VALUES_FILE $HELM_INSTALL_NAME -n $ENVIRONMENT --create-namespace --atomic .
+          kubectl config view
+          #helm upgrade -i -f $HELM_VALUES_FILE $HELM_INSTALL_NAME -n $ENVIRONMENT --create-namespace --atomic .

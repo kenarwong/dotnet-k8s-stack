@@ -40,6 +40,9 @@ Session.vim
 
 .history
 
+# Local Helm variables
+local.vars.yaml
+
 # Terraform
 .terraform/
 terraform.tfstate
