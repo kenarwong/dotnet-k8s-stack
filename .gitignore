@@ -1,3 +1,50 @@
+project.lock.json
+.DS_Store
+*.pyc
+nupkg/
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+build/
+bld/
+[Bb]in/
+[Oo]bj/
+[Oo]ut/
+msbuild.log
+msbuild.err
+msbuild.wrn
+
+# Vscode files
+.vscode
+
+# User-specific files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Vim-related files
+[._]*.s[a-w][a-z]
+[._]s[a-w][a-z]
+*.un~
+Session.vim
+.netrwhist
+
+# Chart dependencies
+**/charts/*.tgz
+requirements.lock
+
+.history
+
+# Local Helm variables
+local.vars.yaml
+
+# Terraform
 .terraform/
 terraform.tfstate
 terraform.tfstate.backup

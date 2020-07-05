@@ -21,6 +21,12 @@ resource "azurerm_kubernetes_cluster" "aks" {
   #  network_policy = "azure"
   #}
 
+  addon_profile {
+    kube_dashboard {
+      enabled = true
+    }
+  }
+
   tags = {
     Environment = var.environment
   }

@@ -1,4 +1,4 @@
-name: infrastructure
+name: dotnet-k8s-stack
 
 on:
   push:
@@ -32,6 +32,7 @@ env:
   API_IMAGE_VERSION: "1.0"
   APP_IMAGE_NAME: "adventureworks-app-dotnet3.1"
   APP_IMAGE_VERSION: "1.0"
+  HELM_INSTALL_NAME: adventureworks
 
 jobs:
   set-environment:
@@ -64,22 +65,18 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       
-      - name: 'Azure CLI script file'
-        id: setup_terraform_backend
-        uses: azure/CLI@v1
-        with:
-          azcliversion: 2.8.0
-          inlineScript: |
-            chmod +x $GITHUB_WORKSPACE/infrastructure/terraform/$PROVIDER/backend/setup-terraform-backend.sh
-            $GITHUB_WORKSPACE/infrastructure/terraform/$PROVIDER/backend/setup-terraform-backend.sh -g $TERRAFORM_BACKEND_GROUP_NAME -l $LOCATION --storage-account-name $STORAGE_ACCOUNT_NAME --storage-container-name $STORAGE_CONTAINER_NAME
+      - name: 'Set-up terraform backend'
+        id: setup-terraform-backend
+        run: |
+          chmod +x $GITHUB_WORKSPACE/infrastructure/terraform/$PROVIDER/backend/setup-terraform-backend.sh
+          $GITHUB_WORKSPACE/infrastructure/terraform/$PROVIDER/backend/setup-terraform-backend.sh -g $TERRAFORM_BACKEND_GROUP_NAME -l $LOCATION --storage-account-name $STORAGE_ACCOUNT_NAME --storage-container-name $STORAGE_CONTAINER_NAME
 
-  terraform:
+  infrastructure:
     needs: backend
     runs-on: ubuntu-latest
     env:
       TFVARS_FILE: "workflow.tfvars"
     outputs:
-      #kube_config: ${{ steps.output.outputs.kube_config }}
       ip_address: ${{ steps.output.outputs.ip_address }}
       acr_login_server: ${{ steps.output.outputs.acr_login_server }}
 
@@ -152,14 +149,13 @@ jobs:
           cd $WORKING_DIRECTORY
           echo "Azure DNS name servers"
           terraform output name_servers
-          #KUBE_CONFIG="$(terraform output kube_config)"
           IP_ADDRESS="$(terraform output ip_address)"
           ACR_LOGIN_SERVER="$(terraform output acr_login_server)"
           echo "::set-output name=ip_address::"$IP_ADDRESS""
           echo "::set-output name=acr_login_server::"$ACR_LOGIN_SERVER""
 
-  docker:
-    needs: terraform
+  image:
+    needs: infrastructure
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -170,7 +166,7 @@ jobs:
       - name: 'Login to Azure ACR'
         id: acr-login
         run: |
-          docker login "${{ needs.terraform.outputs.acr_login_server }}" --username $ARM_CLIENT_ID --password $ARM_CLIENT_SECRET
+          docker login "${{ needs.infrastructure.outputs.acr_login_server }}" --username $ARM_CLIENT_ID --password $ARM_CLIENT_SECRET
 
       - name: 'Get backup'
         id: get-backup
@@ -183,19 +179,72 @@ jobs:
         id: build-sql-image
         run: |
           cd sql
-          docker build . -t ${{ needs.terraform.outputs.acr_login_server }}/$SQL_IMAGE_NAME:$SQL_IMAGE_VERSION
-          docker push ${{ needs.terraform.outputs.acr_login_server }}/$SQL_IMAGE_NAME:$SQL_IMAGE_VERSION
+          docker build . -t ${{ needs.infrastructure.outputs.acr_login_server }}/$SQL_IMAGE_NAME:$SQL_IMAGE_VERSION
+          docker push ${{ needs.infrastructure.outputs.acr_login_server }}/$SQL_IMAGE_NAME:$SQL_IMAGE_VERSION
 
       - name: 'Build api image'
         id: build-api-image
         run: |
           cd api
-          docker build . -t ${{ needs.terraform.outputs.acr_login_server }}/$API_IMAGE_NAME:$API_IMAGE_VERSION
-          docker push ${{ needs.terraform.outputs.acr_login_server }}/$API_IMAGE_NAME:$API_IMAGE_VERSION
+          docker build . -t ${{ needs.infrastructure.outputs.acr_login_server }}/$API_IMAGE_NAME:$API_IMAGE_VERSION
+          docker push ${{ needs.infrastructure.outputs.acr_login_server }}/$API_IMAGE_NAME:$API_IMAGE_VERSION
 
       - name: 'Build app image'
         id: build-app-image
         run: |
           cd app
-          docker build . -t ${{ needs.terraform.outputs.acr_login_server }}/$APP_IMAGE_NAME:$APP_IMAGE_VERSION
-          docker push ${{ needs.terraform.outputs.acr_login_server }}/$APP_IMAGE_NAME:$APP_IMAGE_VERSION
+          docker build . -t ${{ needs.infrastructure.outputs.acr_login_server }}/$APP_IMAGE_NAME:$APP_IMAGE_VERSION
+          docker push ${{ needs.infrastructure.outputs.acr_login_server }}/$APP_IMAGE_NAME:$APP_IMAGE_VERSION
+
+  orchestration:
+    needs: [image, infrastructure]
+    runs-on: ubuntu-latest
+    env:
+      HELM_VARIABLES_FILE: "vars.yaml"
+      HELM_TEMPLATE_FILE: "values-template.yaml"
+      HELM_VALUES_FILE: "values.yaml"
+    defaults:
+      run:
+        working-directory: ./orchestration
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: 'Login via Azure CLI'
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      
+      - name: 'Get AKS credentials'
+        id: get-aks-credentials
+        run: |
+            az aks get-credentials -g $GROUP_NAME -n $CLUSTER_NAME --overwrite
+
+      - name: 'Replace Helm tokens'
+        id: replace-helm-tokens
+        run: |
+          cat <<EOF > $HELM_VARIABLES_FILE
+            ENVIRONMENT: $ENVIRONMENT
+            CLUSTER_NAME: $CLUSTER_NAME
+            IP_ADDRESS: ${{ needs.infrastructure.outputs.ip_address }}
+            DOMAIN_NAME: $DOMAIN_NAME
+            ACR_LOGIN_SERVER: ${{ needs.infrastructure.outputs.acr_login_server }}
+            SQL_IMAGE_NAME: $SQL_IMAGE_NAME
+            SQL_IMAGE_VERSION: $SQL_IMAGE_VERSION
+            API_IMAGE_NAME: $API_IMAGE_NAME
+            API_IMAGE_VERSION: $API_IMAGE_VERSION
+            APP_IMAGE_NAME: $APP_IMAGE_NAME
+            APP_IMAGE_VERSION: $APP_IMAGE_VERSION
+          EOF
+
+          chmod +x replace-helm-tokens.sh
+          ./replace-helm-tokens.sh -f $HELM_VARIABLES_FILE --template-file $HELM_TEMPLATE_FILE --output-file $HELM_VALUES_FILE
+
+      - name: 'helm dependency update'
+        id: helm-dependency-update
+        run: |
+          helm dependency update
+
+      - name: 'helm install'
+        id: helm-install
+        run: |
+          helm upgrade -i -f $HELM_VALUES_FILE $HELM_INSTALL_NAME --create-namespace -n $ENVIRONMENT --atomic .
