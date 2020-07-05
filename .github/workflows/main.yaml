@@ -203,7 +203,7 @@ jobs:
 
   orchestration:
     needs: image
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     env:
       HELM_VALUES_FILE: "values.yaml"
     defaults:
