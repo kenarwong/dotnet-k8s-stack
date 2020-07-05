@@ -230,7 +230,7 @@ jobs:
           cat <<EOF > $HELM_VARIABLES_FILE
             ENVIRONMENT: $ENVIRONMENT
             CLUSTER_NAME: $CLUSTER_NAME
-            IP_ADDRESS: $IP_ADDRESS
+            IP_ADDRESS: ${{ needs.infrastructure.outputs.ip_address }}
             DOMAIN_NAME: $DOMAIN_NAME
             ACR_LOGIN_SERVER: ${{ needs.infrastructure.outputs.acr_login_server }}
             SQL_IMAGE_NAME: $SQL_IMAGE_NAME
