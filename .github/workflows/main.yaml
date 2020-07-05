@@ -219,13 +219,11 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
       
-      - name: 'Azure CLI script file'
+      - name: 'Get AKS credentials'
         id: get-aks-credentials
-        uses: azure/CLI@v1
-        with:
-          azcliversion: 2.8.0
-          inlineScript: |
+        run: |
             az aks get-credentials -g $GROUP_NAME -n $CLUSTER_NAME --overwrite
+            kubectl config view --raw >~/.kube/config
 
       - name: 'Replace Helm tokens'
         id: replace-helm-tokens
