@@ -7,10 +7,10 @@ metadata:
     nginx.ingress.kubernetes.io/enable-cors: "true"
     #cert-manager.io/cluster-issuer: letsencrypt-staging
 spec:
-  #tls:
-  #  - hosts:
-  #    - demo-aks-ingress.eastus.cloudapp.azure.com
-  #    secretName: tls-secret
+  tls:
+    - hosts:
+        - {{ .Values.ingress.DOMAIN_NAME }}
+      secretName: {{ .Values.ingress.tls.secretName }}
   rules:
     - host: api.{{ .Values.ingress.DOMAIN_NAME }}
       http:

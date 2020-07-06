@@ -17,6 +17,8 @@ ingress:
   name: nginx-ingress
   class: nginx
   DOMAIN_NAME: %%DOMAIN_NAME%%
+  tls:
+    secretName: tls-secret
 
 data:
   deployment:
