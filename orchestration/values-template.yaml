@@ -20,6 +20,15 @@ ingress:
   tls:
     secretName: tls-secret
 
+certManager:
+  issuer:
+    name: lets-encrypt-issuer
+  acme:
+    server: %%CERT_ACME_SERVER%%
+    email: %%CERT_REGISTRATION_EMAIL%% 
+    privateKeySecretRef: 
+      name: %%CERT_KEY_REF%% 
+
 data:
   deployment:
     name: mssql-deployment

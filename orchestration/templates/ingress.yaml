@@ -5,11 +5,12 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: {{ .Values.ingress.class }}
     nginx.ingress.kubernetes.io/enable-cors: "true"
-    #cert-manager.io/cluster-issuer: letsencrypt-staging
+    cert-manager.io/issuer: {{ .Values.certManager.issuer.name }}
 spec:
   tls:
     - hosts:
         - {{ .Values.ingress.DOMAIN_NAME }}
+        - "*.{{ .Values.ingress.DOMAIN_NAME }}"
       secretName: {{ .Values.ingress.tls.secretName }}
   rules:
     - host: api.{{ .Values.ingress.DOMAIN_NAME }}
