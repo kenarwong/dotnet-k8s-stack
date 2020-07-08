@@ -248,7 +248,7 @@ jobs:
             CERT_ACME_SERVER: $CERT_ACME_SERVER
             CERT_REGISTRATION_EMAIL: $CERT_REGISTRATION_EMAIL
             CERT_MANAGER_CLIENT_ID: $CERT_MANAGER_CLIENT_ID
-            CERT_MANAGER_CLIENT_SECRET: $CERT_MANAGER_CLIENT_SECRET
+            CERT_MANAGER_CLIENT_SECRET: $(echo -n "$CERT_MANAGER_CLIENT_SECRET" | base64)
             AZURE_TENANT_ID: $AZURE_TENANT_ID
             AZURE_SUBSCRIPTION_ID: $AZURE_SUBSCRIPTION_ID
             AZURE_DNS_ZONE_RESOURCE_GROUP: ${{ needs.infrastructure.outputs.dns_zone_resource_group }} 
@@ -263,8 +263,6 @@ jobs:
 
           chmod +x replace-helm-tokens.sh
           ./replace-helm-tokens.sh -f $HELM_VARIABLES_FILE --template-file $HELM_TEMPLATE_FILE --output-file $HELM_VALUES_FILE
-
-          cat $HELM_VALUES_FILE
 
       - name: 'helm dependency update'
         id: helm-dependency-update
