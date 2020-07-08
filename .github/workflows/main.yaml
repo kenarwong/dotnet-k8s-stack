@@ -22,7 +22,7 @@ env:
   ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
   ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
   DOMAIN_NAME: ${{ secrets.PUBLIC_DOMAIN_NAME }}
-  CERT_ACME_SERVER: https://acme-staging-v02.api.letsencrypt.org/directory
+  CERT_ACME_SERVER: https://acme-v02.api.letsencrypt.org/directory
   CERT_REGISTRATION_EMAIL: ${{ secrets.CERT_REGISTRATION_EMAIL }}
   CERT_MANAGER_CLIENT_ID: ${{ secrets.CERT_MANAGER_CLIENT_ID }}
   CERT_MANAGER_OBJECT_ID: ${{ secrets.CERT_MANAGER_OBJECT_ID }}
