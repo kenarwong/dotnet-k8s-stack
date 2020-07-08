@@ -39,7 +39,7 @@ certManager:
     name: azuredns-config
     key: cert-manager-sp-secret-key 
     values:
-      CERT_MANAGER_CLIENT_SECRET: "%%CERT_MANAGER_CLIENT_SECRET%%"
+      CERT_MANAGER_CLIENT_SECRET: %%CERT_MANAGER_CLIENT_SECRET%%
 
 data:
   deployment:
