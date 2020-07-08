@@ -20,6 +20,13 @@ resource "azurerm_dns_zone" "dns" {
   }
 }
 
+## Create DNS Zone Role Assignment ##
+resource "azurerm_role_assignment" "cert-manager-dns-zone-role" {
+  scope                = azurerm_dns_zone.dns.id
+  role_definition_name = "DNS Zone Contributor"
+  principal_id         = var.cert_manager_sp_object_id
+}
+
 ## A Record ##
 resource "azurerm_dns_a_record" "a-record" {
   name                = "@"

@@ -1,4 +1,4 @@
-# ---------------------------------------------------------------------------------------------------------------------
+ ---------------------------------------------------------------------------------------------------------------------
 # REQUIRED PARAMETERS
 # You must provide a value for each of these parameters.
 # ---------------------------------------------------------------------------------------------------------------------
@@ -34,18 +34,23 @@ variable "node_count" {
   default     = 2
 }
 
-variable "client_id" {
+variable "aks_sp_client_id" {
   description = "The service principal client id for AKS operations."
   type        = string
 }
 
-variable "client_secret" {
+variable "aks_sp_client_secret" {
   description = "The service principal client secret for AKS operations."
   type        = string
 }
 
-variable "service_principal_object_id" {
+variable "acr_sp_object_id" {
   description = "The service principal object id for ACR role assignment."
+  type        = string
+}
+
+variable "cert_manager_sp_object_id" {
+  description = "The service principal object id to be used by the certificate manager."
   type        = string
 }
 

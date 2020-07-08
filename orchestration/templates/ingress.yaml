@@ -9,23 +9,23 @@ metadata:
 spec:
   tls:
     - hosts:
-        - {{ .Values.ingress.DOMAIN_NAME }}
-        - "*.{{ .Values.ingress.DOMAIN_NAME }}"
+        - {{ .Values.ingress.domainName }}
+        - "*.{{ .Values.ingress.domainName }}"
       secretName: {{ .Values.ingress.tls.secretName }}
   rules:
-    - host: api.{{ .Values.ingress.DOMAIN_NAME }}
+    - host: api.{{ .Values.ingress.domainName }}
       http:
         paths:
           - backend:
               serviceName: {{ .Values.api.service.name }}
               servicePort: {{ .Values.api.service.port }}
-    - host: app.{{ .Values.ingress.DOMAIN_NAME }}
+    - host: app.{{ .Values.ingress.domainName }}
       http:
         paths:
           - backend:
               serviceName: {{ .Values.app.service.name }}
               servicePort: {{ .Values.app.service.port }}
-    - host: {{ .Values.ingress.DOMAIN_NAME }}
+    - host: {{ .Values.ingress.domainName }}
       http:
         paths:
           - backend:

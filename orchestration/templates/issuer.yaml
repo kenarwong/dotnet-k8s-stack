@@ -9,6 +9,15 @@ spec:
     privateKeySecretRef:
       name: {{ .Values.certManager.acme.privateKeySecretRef.name }}
     solvers:
-      - http01:
-          ingress:
-            class: {{ .Values.ingress.class }}
+      - dns01:
+          azuredns:
+            clientID: {{ .Values.certManager.acme.solvers.dns01.azuredns.clientID }}
+            clientSecretSecretRef:
+              name: {{ .Values.certManager.secret.name }}
+              key: {{ .Values.certManager.secret.key }}
+            subscriptionID: {{ .Values.certManager.acme.solvers.dns01.azuredns.subscriptionID }}
+            tenantID: {{ .Values.certManager.acme.solvers.dns01.azuredns.tenantID }}
+            resourceGroupName: {{ .Values.certManager.acme.solvers.dns01.azuredns.resourceGroupName }}
+            hostedZoneName: {{ .Values.ingress.domainName }}
+            # Azure Cloud Environment, default to AzurePublicCloud
+            environment: AzurePublicCloud
