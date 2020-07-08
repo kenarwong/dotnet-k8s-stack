@@ -27,7 +27,7 @@ certManager:
     server: %%CERT_ACME_SERVER%%
     email: %%CERT_REGISTRATION_EMAIL%% 
     privateKeySecretRef:
-      letsencrypt-secret
+      name: letsencrypt-secret
     solvers:
       dns01:
         azuredns:
