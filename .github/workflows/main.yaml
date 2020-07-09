@@ -214,8 +214,7 @@ jobs:
           docker push ${{ needs.infrastructure.outputs.acr_login_server }}/$APP_IMAGE_NAME:$APP_IMAGE_VERSION
 
   orchestration:
-    #needs: [get-environment, image, infrastructure]
-    needs: [get-environment, infrastructure]
+    needs: [get-environment, image, infrastructure]
     runs-on: ubuntu-latest
     env:
       HELM_VARIABLES_FILE: "vars.yaml"
