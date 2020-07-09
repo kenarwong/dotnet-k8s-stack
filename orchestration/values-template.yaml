@@ -16,7 +16,30 @@ nginx-ingress:
 ingress:
   name: nginx-ingress
   class: nginx
-  DOMAIN_NAME: %%DOMAIN_NAME%%
+  domainName: %%DOMAIN_NAME%%
+  tls:
+    secretName: tls-secret
+
+certManager:
+  issuer:
+    name: lets-encrypt-issuer
+  acme:
+    server: %%CERT_ACME_SERVER%%
+    email: %%CERT_REGISTRATION_EMAIL%% 
+    privateKeySecretRef:
+      name: letsencrypt-secret
+    solvers:
+      dns01:
+        azuredns:
+          clientID: %%CERT_MANAGER_CLIENT_ID%%
+          subscriptionID: %%AZURE_SUBSCRIPTION_ID%%
+          tenantID: %%AZURE_TENANT_ID%%
+          resourceGroupName: %%AZURE_DNS_ZONE_RESOURCE_GROUP%%
+  secret:
+    name: azuredns-config
+    key: cert-manager-sp-secret-key 
+    values:
+      CERT_MANAGER_CLIENT_SECRET: %%CERT_MANAGER_CLIENT_SECRET%%
 
 data:
   deployment:

@@ -5,26 +5,27 @@ metadata:
   annotations:
     kubernetes.io/ingress.class: {{ .Values.ingress.class }}
     nginx.ingress.kubernetes.io/enable-cors: "true"
-    #cert-manager.io/cluster-issuer: letsencrypt-staging
+    cert-manager.io/issuer: {{ .Values.certManager.issuer.name }}
 spec:
-  #tls:
-  #  - hosts:
-  #    - demo-aks-ingress.eastus.cloudapp.azure.com
-  #    secretName: tls-secret
+  tls:
+    - hosts:
+        - {{ .Values.ingress.domainName }}
+        - "*.{{ .Values.ingress.domainName }}"
+      secretName: {{ .Values.ingress.tls.secretName }}
   rules:
-    - host: api.{{ .Values.ingress.DOMAIN_NAME }}
+    - host: api.{{ .Values.ingress.domainName }}
       http:
         paths:
           - backend:
               serviceName: {{ .Values.api.service.name }}
               servicePort: {{ .Values.api.service.port }}
-    - host: app.{{ .Values.ingress.DOMAIN_NAME }}
+    - host: app.{{ .Values.ingress.domainName }}
       http:
         paths:
           - backend:
               serviceName: {{ .Values.app.service.name }}
               servicePort: {{ .Values.app.service.port }}
-    - host: {{ .Values.ingress.DOMAIN_NAME }}
+    - host: {{ .Values.ingress.domainName }}
       http:
         paths:
           - backend:

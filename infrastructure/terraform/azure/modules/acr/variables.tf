@@ -24,7 +24,7 @@ variable "sku" {
   type        = string
 }
 
-variable "service_principal" {
+variable "acr_sp_object_id" {
   description = "The service principal object id to perform ACR operations."
   type        = string
 }

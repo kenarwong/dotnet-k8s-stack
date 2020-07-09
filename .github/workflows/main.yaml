@@ -22,14 +22,21 @@ env:
   ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
   ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
   DOMAIN_NAME: ${{ secrets.PUBLIC_DOMAIN_NAME }}
+  CERT_ACME_SERVER: https://acme-v02.api.letsencrypt.org/directory
+  CERT_REGISTRATION_EMAIL: ${{ secrets.CERT_REGISTRATION_EMAIL }}
+  CERT_MANAGER_CLIENT_ID: ${{ secrets.CERT_MANAGER_CLIENT_ID }}
+  CERT_MANAGER_OBJECT_ID: ${{ secrets.CERT_MANAGER_OBJECT_ID }}
+  CERT_MANAGER_CLIENT_SECRET: ${{ secrets.CERT_MANAGER_CLIENT_SECRET }}
+  AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+  AZURE_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
   K8S_CLIENT_ID: ${{ secrets.K8S_CLIENT_ID }}
   K8S_CLIENT_SECRET: ${{ secrets.K8S_CLIENT_SECRET }}
   K8S_OBJECT_ID: ${{ secrets.K8S_OBJECT_ID }}
-  SQL_IMAGE_NAME: "adventureworks2017-mssql2019-ubuntu16.04-backup-only"
+  SQL_IMAGE_NAME: adventureworks2017-mssql2019-ubuntu16.04-backup-only
   SQL_IMAGE_VERSION: "1.0"
-  API_IMAGE_NAME: "adventureworks-api-dotnet3.1"
+  API_IMAGE_NAME: adventureworks-api-dotnet3.1
   API_IMAGE_VERSION: "1.0"
-  APP_IMAGE_NAME: "adventureworks-app-dotnet3.1"
+  APP_IMAGE_NAME: adventureworks-app-dotnet3.1
   APP_IMAGE_VERSION: "1.0"
   HELM_INSTALL_NAME: adventureworks
 
@@ -85,6 +92,7 @@ jobs:
     outputs:
       ip_address: ${{ steps.output.outputs.ip_address }}
       acr_login_server: ${{ steps.output.outputs.acr_login_server }}
+      dns_zone_resource_group: ${{ steps.output.outputs.dns_zone_resource_group }}
 
     steps:
       - uses: actions/checkout@v2
@@ -106,9 +114,10 @@ jobs:
           cluster_name                = "$CLUSTER_NAME"
           domain_name                 = "$DOMAIN_NAME"
           acr_name                    = "$ACR_NAME"
-          client_id                   = "$K8S_CLIENT_ID"
-          client_secret               = "$K8S_CLIENT_SECRET"
-          service_principal_object_id = "$K8S_OBJECT_ID"
+          aks_sp_client_id            = "$K8S_CLIENT_ID"
+          aks_sp_client_secret        = "$K8S_CLIENT_SECRET"
+          acr_sp_object_id            = "$K8S_OBJECT_ID"
+          cert_manager_sp_object_id   = "$CERT_MANAGER_OBJECT_ID"
           environment                 = "${{ needs.get-environment.outputs.environment }}"
           EOF
 
@@ -157,8 +166,10 @@ jobs:
           terraform output name_servers
           IP_ADDRESS="$(terraform output ip_address)"
           ACR_LOGIN_SERVER="$(terraform output acr_login_server)"
+          DNS_ZONE_RESOURCE_GROUP="$(terraform output dns_zone_resource_group)"
           echo "::set-output name=ip_address::"$IP_ADDRESS""
           echo "::set-output name=acr_login_server::"$ACR_LOGIN_SERVER""
+          echo "::set-output name=dns_zone_resource_group::"$DNS_ZONE_RESOURCE_GROUP""
 
   image:
     needs: infrastructure
@@ -233,6 +244,13 @@ jobs:
             CLUSTER_NAME: $CLUSTER_NAME
             IP_ADDRESS: ${{ needs.infrastructure.outputs.ip_address }}
             DOMAIN_NAME: $DOMAIN_NAME
+            CERT_ACME_SERVER: $CERT_ACME_SERVER
+            CERT_REGISTRATION_EMAIL: $CERT_REGISTRATION_EMAIL
+            CERT_MANAGER_CLIENT_ID: $CERT_MANAGER_CLIENT_ID
+            CERT_MANAGER_CLIENT_SECRET: $(echo -n "$CERT_MANAGER_CLIENT_SECRET" | base64)
+            AZURE_TENANT_ID: $AZURE_TENANT_ID
+            AZURE_SUBSCRIPTION_ID: $AZURE_SUBSCRIPTION_ID
+            AZURE_DNS_ZONE_RESOURCE_GROUP: ${{ needs.infrastructure.outputs.dns_zone_resource_group }} 
             ACR_LOGIN_SERVER: ${{ needs.infrastructure.outputs.acr_login_server }}
             SQL_IMAGE_NAME: $SQL_IMAGE_NAME
             SQL_IMAGE_VERSION: $SQL_IMAGE_VERSION

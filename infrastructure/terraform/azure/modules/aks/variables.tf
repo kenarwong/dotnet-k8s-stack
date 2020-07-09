@@ -24,12 +24,12 @@ variable "node_count" {
   default     = 2
 }
 
-variable "client_id" {
+variable "aks_sp_client_id" {
   description = "The service principal client id for AKS operations."
   type        = string
 }
 
-variable "client_secret" {
+variable "aks_sp_client_secret" {
   description = "The service principal client secret for AKS operations."
   type        = string
 }

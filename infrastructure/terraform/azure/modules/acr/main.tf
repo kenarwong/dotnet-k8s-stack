@@ -14,5 +14,5 @@ resource "azurerm_container_registry" "acr" {
 resource "azurerm_role_assignment" "acr-pull-role" {
   scope                = azurerm_container_registry.acr.id
   role_definition_name = "acrPull"
-  principal_id         = var.service_principal
+  principal_id         = var.acr_sp_object_id
 }
