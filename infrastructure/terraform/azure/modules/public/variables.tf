@@ -23,6 +23,11 @@ variable "domain_name" {
   type        = string
 }
 
+variable "cert_manager_sp_object_id" {
+  description = "The service principal object ID to be used by the cert manager."
+  type        = string
+}
+
 variable "environment" {
   description = "The environment of the public IP and DNS."
   type        = string

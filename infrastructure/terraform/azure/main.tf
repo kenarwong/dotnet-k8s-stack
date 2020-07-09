@@ -27,13 +27,13 @@ resource "azurerm_resource_group" "rg" {
 module "aks" {
   source = "./modules/aks"
 
-  resource_group_name = azurerm_resource_group.rg.name
-  location            = azurerm_resource_group.rg.location
-  cluster_name        = var.cluster_name
-  node_count          = var.node_count
-  client_id           = var.client_id
-  client_secret       = var.client_secret
-  environment         = var.environment
+  resource_group_name   = azurerm_resource_group.rg.name
+  location              = azurerm_resource_group.rg.location
+  cluster_name          = var.cluster_name
+  node_count            = var.node_count
+  aks_sp_client_id      = var.aks_sp_client_id
+  aks_sp_client_secret  = var.aks_sp_client_secret
+  environment           = var.environment
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -43,11 +43,12 @@ module "aks" {
 module "public" {
   source = "./modules/public"
 
-  resource_group_name = "${module.aks.cluster_resource_group}"
-  location            = azurerm_resource_group.rg.location
-  cluster_name        = var.cluster_name
-  domain_name         = var.domain_name
-  environment         = var.environment
+  resource_group_name       = "${module.aks.cluster_resource_group}"
+  location                  = azurerm_resource_group.rg.location
+  cluster_name              = var.cluster_name
+  domain_name               = var.domain_name
+  environment               = var.environment
+  cert_manager_sp_object_id = var.cert_manager_sp_object_id
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -60,7 +61,7 @@ module "acr" {
   resource_group_name = azurerm_resource_group.rg.name
   location            = var.location
   acr_name            = var.acr_name
-  service_principal   = var.service_principal_object_id
+  acr_sp_object_id    = var.acr_sp_object_id
   environment         = var.environment
 }
 
@@ -83,4 +84,8 @@ output "name_servers" {
 
 output "acr_login_server" {
   value = "${module.acr.login_server}"
+}
+
+output "dns_zone_resource_group" {
+  value = "${module.aks.cluster_resource_group}"
 }
