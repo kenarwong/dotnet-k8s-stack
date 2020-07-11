@@ -16,10 +16,10 @@ resource "azurerm_kubernetes_cluster" "aks" {
     client_secret = var.aks_sp_client_secret
   }
 
-  network_profile {
-    network_plugin = "kubenet"
-    network_policy = "calico"
-  }
+  #network_profile {
+  #  network_plugin = "kubenet"
+  #  network_policy = "calico"
+  #}
 
   addon_profile {
     kube_dashboard {
