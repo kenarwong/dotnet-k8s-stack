@@ -43,6 +43,7 @@ module "aks" {
   source = "./modules/aks"
 
   resource_group_name   = azurerm_resource_group.rg.name
+  resource_group_id     = azurerm_resource_group.rg.id
   location              = azurerm_resource_group.rg.location
   cluster_name          = var.cluster_name
   node_count            = var.node_count
