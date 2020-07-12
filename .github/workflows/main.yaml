@@ -92,6 +92,7 @@ jobs:
     outputs:
       ip_address: ${{ steps.output.outputs.ip_address }}
       acr_login_server: ${{ steps.output.outputs.acr_login_server }}
+      aks_cluster_group: ${{ steps.output.outputs.aks_cluster_group }}
 
     steps:
       - uses: actions/checkout@v2
@@ -166,8 +167,10 @@ jobs:
           terraform output name_servers
           IP_ADDRESS="$(terraform output ip_address)"
           ACR_LOGIN_SERVER="$(terraform output acr_login_server)"
+          AKS_CLUSTER_GROUP="$(terraform output aks_resource_group)"
           echo "::set-output name=ip_address::"$IP_ADDRESS""
           echo "::set-output name=acr_login_server::"$ACR_LOGIN_SERVER""
+          echo "::set-output name=aks_resource_group::"$AKS_CLUSTER_GROUP""
 
   image:
     needs: infrastructure
@@ -248,7 +251,8 @@ jobs:
             CERT_MANAGER_CLIENT_SECRET: $(echo -n "$CERT_MANAGER_CLIENT_SECRET" | base64)
             AZURE_TENANT_ID: $AZURE_TENANT_ID
             AZURE_SUBSCRIPTION_ID: $AZURE_SUBSCRIPTION_ID
-            AZURE_DNS_ZONE_RESOURCE_GROUP: $GROUP_NAME 
+            AZURE_DNS_ZONE_RESOURCE_GROUP: ${{ needs.infrastructure.outputs.aks_cluster_group }} 
+            AZURE_IP_ADDRESS_RESOURCE_GROUP: ${{ needs.infrastructure.outputs.aks_cluster_group }}
             ACR_LOGIN_SERVER: ${{ needs.infrastructure.outputs.acr_login_server }}
             SQL_IMAGE_NAME: $SQL_IMAGE_NAME
             SQL_IMAGE_VERSION: $SQL_IMAGE_VERSION

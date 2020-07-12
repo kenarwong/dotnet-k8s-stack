@@ -34,8 +34,8 @@ variable "aks_sp_client_secret" {
   type        = string
 }
 
-variable "vnet_subnet_id" {
-  description = "The virtual network subnet ID to be used by AKS."
+variable "vnet_sp_object_id" {
+  description = "The service principal object ID that has access to the virtual network."
   type        = string
 }
 
