@@ -32,7 +32,7 @@ module "network" {
   cluster_name              = var.cluster_name
   domain_name               = var.domain_name
   cert_manager_sp_object_id = var.cert_manager_sp_object_id
-  vnet_sp_client_id         = var.aks_sp_client_id
+  vnet_sp_object_id         = var.vnet_sp_object_id
   environment               = var.environment
 }
 

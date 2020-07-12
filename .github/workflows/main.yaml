@@ -118,6 +118,7 @@ jobs:
           aks_sp_client_secret        = "$K8S_CLIENT_SECRET"
           acr_sp_object_id            = "$K8S_OBJECT_ID"
           cert_manager_sp_object_id   = "$CERT_MANAGER_OBJECT_ID"
+          vnet_sp_object_id           = "$K8S_OBJECT_ID"
           environment                 = "${{ needs.get-environment.outputs.environment }}"
           EOF
 

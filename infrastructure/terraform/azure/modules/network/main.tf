@@ -14,11 +14,29 @@ resource "azurerm_subnet" "subnet" {
   address_prefixes      = ["10.240.0.0/16"]
 }
 
+## Virtual Network Custom Role ##
+resource "azurerm_role_definition" "vnet-custom-role" {
+  name               = "vnet-custom-role-definition"
+  scope              = azurerm_subnet.subnet.id
+
+  permissions {
+    actions     = [
+      "Microsoft.Network/virtualNetworks/subnets/join/action",
+      "Microsoft.Network/virtualNetworks/subnets/read"
+    ]
+    not_actions = []
+  }
+
+  assignable_scopes = [
+    azurerm_subnet.subnet.id,
+  ]
+}
+
 ## Create Virtual Network Role Assignment ##
 resource "azurerm_role_assignment" "vnet-role" {
-  scope                = azurerm_subnet.subnet.id
-  role_definition_name = "Network Contributor"
-  principal_id         = var.vnet_sp_client_id
+  scope               = azurerm_subnet.subnet.id
+  role_definition_id  = azurerm_role_definition.vnet-custom-role.id
+  principal_id        = var.vnet_sp_object_id
 }
 
 ## Public IP ##
