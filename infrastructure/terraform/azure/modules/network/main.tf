@@ -16,7 +16,7 @@ resource "azurerm_subnet" "subnet" {
 
 ## Create Virtual Network Role Assignment ##
 resource "azurerm_role_assignment" "vnet-role" {
-  scope                = var.vnet_subnet_id
+  scope                = azurerm_subnet.subnet.id
   role_definition_name = "Network Contributor"
   principal_id         = var.vnet_sp_client_id
 }
