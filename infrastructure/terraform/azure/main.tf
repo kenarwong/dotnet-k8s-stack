@@ -76,11 +76,11 @@ output "kube_config" {
 }
 
 output "ip_address" {
-  value = "${module.network.ip_address}"
+  value = "${module.public.ip_address}"
 }
 
 output "name_servers" {
-  value = "${module.network.name_servers}"
+  value = "${module.public.name_servers}"
 }
 
 output "acr_login_server" {
