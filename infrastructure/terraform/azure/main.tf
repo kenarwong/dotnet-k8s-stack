@@ -87,6 +87,6 @@ output "acr_login_server" {
   value = "${module.acr.login_server}"
 }
 
-output "aks_resource_group" {
+output "aks_cluster_group" {
   value = "${module.aks.cluster_resource_group}"
 }

@@ -167,10 +167,10 @@ jobs:
           terraform output name_servers
           IP_ADDRESS="$(terraform output ip_address)"
           ACR_LOGIN_SERVER="$(terraform output acr_login_server)"
-          AKS_CLUSTER_GROUP="$(terraform output aks_resource_group)"
+          AKS_CLUSTER_GROUP="$(terraform output aks_cluster_group)"
           echo "::set-output name=ip_address::"$IP_ADDRESS""
           echo "::set-output name=acr_login_server::"$ACR_LOGIN_SERVER""
-          echo "::set-output name=aks_resource_group::"$AKS_CLUSTER_GROUP""
+          echo "::set-output name=aks_cluster_group::"$AKS_CLUSTER_GROUP""
 
   image:
     needs: infrastructure
