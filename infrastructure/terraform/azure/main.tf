@@ -21,6 +21,22 @@ resource "azurerm_resource_group" "rg" {
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
+# Azure Network Resources
+# ---------------------------------------------------------------------------------------------------------------------
+
+module "network" {
+  source = "./modules/network"
+
+  resource_group_name       = azurerm_resource_group.rg.name
+  location                  = azurerm_resource_group.rg.location
+  cluster_name              = var.cluster_name
+  domain_name               = var.domain_name
+  cert_manager_sp_object_id = var.cert_manager_sp_object_id
+  vnet_sp_client_id         = var.aks_sp_client_id
+  environment               = var.environment
+}
+
+# ---------------------------------------------------------------------------------------------------------------------
 # Azure Kubernetes Service
 # ---------------------------------------------------------------------------------------------------------------------
 
@@ -33,22 +49,8 @@ module "aks" {
   node_count            = var.node_count
   aks_sp_client_id      = var.aks_sp_client_id
   aks_sp_client_secret  = var.aks_sp_client_secret
+  vnet_subnet_id        = "${modules.network.vnet_subnet_id}"
   environment           = var.environment
-}
-
-# ---------------------------------------------------------------------------------------------------------------------
-# Azure Public IP and DNS
-# ---------------------------------------------------------------------------------------------------------------------
-
-module "public" {
-  source = "./modules/public"
-
-  resource_group_name       = "${module.aks.cluster_resource_group}"
-  location                  = azurerm_resource_group.rg.location
-  cluster_name              = var.cluster_name
-  domain_name               = var.domain_name
-  environment               = var.environment
-  cert_manager_sp_object_id = var.cert_manager_sp_object_id
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -75,11 +77,11 @@ output "kube_config" {
 }
 
 output "ip_address" {
-  value = "${module.public.ip_address}"
+  value = "${module.network.ip_address}"
 }
 
 output "name_servers" {
-  value = "${module.public.name_servers}"
+  value = "${module.network.name_servers}"
 }
 
 output "acr_login_server" {

@@ -34,6 +34,11 @@ variable "aks_sp_client_secret" {
   type        = string
 }
 
+variable "vnet_subnet_id" {
+  description = "The virtual network subnet ID to be used by AKS."
+  type        = string
+}
+
 variable "environment" {
   description = "The environment of the AKS cluster."
   type        = string

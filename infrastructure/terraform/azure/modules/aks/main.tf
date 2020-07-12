@@ -6,9 +6,10 @@ resource "azurerm_kubernetes_cluster" "aks" {
   dns_prefix          = "${var.cluster_name}-${var.resource_group_name}"
 
   default_node_pool {
-    name       = "default"
-    node_count = var.node_count
-    vm_size    = "Standard_DS2_v2"
+    name            = "default"
+    node_count      = var.node_count
+    vm_size         = "Standard_DS2_v2"
+    vnet_subnet_id  = var.vnet_subnet_id
   }
 
   service_principal {
@@ -16,10 +17,10 @@ resource "azurerm_kubernetes_cluster" "aks" {
     client_secret = var.aks_sp_client_secret
   }
 
-  #network_profile {
-  #  network_plugin = "kubenet"
-  #  network_policy = "calico"
-  #}
+  network_profile {
+    network_plugin = "kubenet"
+    network_policy = "calico"
+  }
 
   addon_profile {
     kube_dashboard {
