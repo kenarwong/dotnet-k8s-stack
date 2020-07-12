@@ -39,6 +39,11 @@ variable "vnet_sp_object_id" {
   type        = string
 }
 
+variable "public_ip_id" {
+  description = "The id of the public IP for the outbound loadbalancer."
+  type        = string
+}
+
 variable "environment" {
   description = "The environment of the AKS cluster."
   type        = string

@@ -61,6 +61,10 @@ resource "azurerm_kubernetes_cluster" "aks" {
   network_profile {
     network_plugin = "kubenet"
     network_policy = "calico"
+    load_balancer_sku = "Standard"
+    load_balancer_profile {
+      outbound_ip_address_ids = [ var.public_ip_id ]
+    }
   }
 
   addon_profile {

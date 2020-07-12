@@ -251,8 +251,8 @@ jobs:
             CERT_MANAGER_CLIENT_SECRET: $(echo -n "$CERT_MANAGER_CLIENT_SECRET" | base64)
             AZURE_TENANT_ID: $AZURE_TENANT_ID
             AZURE_SUBSCRIPTION_ID: $AZURE_SUBSCRIPTION_ID
-            AZURE_DNS_ZONE_RESOURCE_GROUP: ${{ needs.infrastructure.outputs.aks_cluster_group }} 
-            AZURE_IP_ADDRESS_RESOURCE_GROUP: ${{ needs.infrastructure.outputs.aks_cluster_group }}
+            AZURE_DNS_ZONE_RESOURCE_GROUP: $GROUP_NAME 
+            AZURE_IP_ADDRESS_RESOURCE_GROUP: $GROUP_NAME
             ACR_LOGIN_SERVER: ${{ needs.infrastructure.outputs.acr_login_server }}
             SQL_IMAGE_NAME: $SQL_IMAGE_NAME
             SQL_IMAGE_VERSION: $SQL_IMAGE_VERSION

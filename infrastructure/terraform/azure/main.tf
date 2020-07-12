@@ -21,6 +21,21 @@ resource "azurerm_resource_group" "rg" {
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
+# Azure Public Resources
+# ---------------------------------------------------------------------------------------------------------------------
+
+module "public" {
+  source = "./modules/public"
+
+  resource_group_name       = azurerm_resource_group.rg.name
+  location                  = azurerm_resource_group.rg.location
+  cluster_name              = var.cluster_name
+  domain_name               = var.domain_name
+  cert_manager_sp_object_id = var.cert_manager_sp_object_id
+  environment               = var.environment
+}
+
+# ---------------------------------------------------------------------------------------------------------------------
 # Azure Kubernetes Service
 # ---------------------------------------------------------------------------------------------------------------------
 
@@ -34,22 +49,8 @@ module "aks" {
   aks_sp_client_id      = var.aks_sp_client_id
   aks_sp_client_secret  = var.aks_sp_client_secret
   vnet_sp_object_id     = var.vnet_sp_object_id
+  public_ip_id          = "${module.public.public_ip_id}"
   environment           = var.environment
-}
-
-# ---------------------------------------------------------------------------------------------------------------------
-# Azure Public Resources
-# ---------------------------------------------------------------------------------------------------------------------
-
-module "public" {
-  source = "./modules/public"
-
-  resource_group_name       = "${module.aks.cluster_resource_group}"
-  location                  = azurerm_resource_group.rg.location
-  cluster_name              = var.cluster_name
-  domain_name               = var.domain_name
-  cert_manager_sp_object_id = var.cert_manager_sp_object_id
-  environment               = var.environment
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
