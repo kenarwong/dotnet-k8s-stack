@@ -49,7 +49,7 @@ module "aks" {
   node_count            = var.node_count
   aks_sp_client_id      = var.aks_sp_client_id
   aks_sp_client_secret  = var.aks_sp_client_secret
-  vnet_subnet_id        = "${modules.network.vnet_subnet_id}"
+  vnet_subnet_id        = "${module.network.vnet_subnet_id}"
   environment           = var.environment
 }
 
