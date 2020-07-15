@@ -54,6 +54,11 @@ variable "cert_manager_sp_object_id" {
   type        = string
 }
 
+variable "vnet_sp_object_id" {
+  description = "The service principal object id that has access to the virtual network."
+  type        = string
+}
+
 variable "environment" {
   description = "The environment of the deployment."
   type        = string
