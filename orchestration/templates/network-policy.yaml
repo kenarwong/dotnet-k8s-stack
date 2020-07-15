@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: data-network-policy
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: {{ .Values.data.deployment.pod.name }}
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+      - podSelector:
+          matchLabels:
+            app.kubernetes.io/name: {{ .Values.api.deployment.pod.name }}
+      - podSelector:
+          matchLabels:
+            app.kubernetes.io/name: {{ .Values.postInstall.name }}
+      ports:
+        - port: {{ .Values.data.deployment.pod.container.containerPort }}
+          protocol: TCP
