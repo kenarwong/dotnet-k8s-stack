@@ -4,12 +4,12 @@
 # ---------------------------------------------------------------------------------------------------------------------
 
 variable "resource_group_name" {
-  description = "The name of the resource group for the public IP and DNS."
+  description = "The name of the resource group for network resources."
   type        = string
 }
 
 variable "location" {
-  description = "The location of the public IP and DNS."
+  description = "The location of for network resources."
   type        = string
 }
 
@@ -29,6 +29,6 @@ variable "cert_manager_sp_object_id" {
 }
 
 variable "environment" {
-  description = "The environment of the public IP and DNS."
+  description = "The environment for network resources."
   type        = string
 }

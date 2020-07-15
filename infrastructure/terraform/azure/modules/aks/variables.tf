@@ -8,6 +8,11 @@ variable "resource_group_name" {
   type        = string
 }
 
+variable "resource_group_id" {
+  description = "The id of the resource group for the AKS cluster."
+  type        = string
+}
+
 variable "location" {
   description = "The location of the AKS cluster."
   type        = string
@@ -31,6 +36,16 @@ variable "aks_sp_client_id" {
 
 variable "aks_sp_client_secret" {
   description = "The service principal client secret for AKS operations."
+  type        = string
+}
+
+variable "vnet_sp_object_id" {
+  description = "The service principal object ID that has access to the virtual network."
+  type        = string
+}
+
+variable "public_ip_id" {
+  description = "The id of the public IP for the outbound loadbalancer."
   type        = string
 }
 

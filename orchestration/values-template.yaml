@@ -8,6 +8,7 @@ nginx-ingress:
     service:
       annotations:
         service.beta.kubernetes.io/azure-dns-label-name: %%CLUSTER_NAME%%-ingress
+        service.beta.kubernetes.io/azure-load-balancer-resource-group: %%AZURE_IP_ADDRESS_RESOURCE_GROUP%%
       loadBalancerIP: %%IP_ADDRESS%%
   defaultBackend:
     nodeSelector:
