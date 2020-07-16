@@ -147,7 +147,7 @@ Project Link: [https://github.com/kenarwong/dotnet-k8s-stack](https://github.com
 * [Kubernetes](https://kubernetes.io/)
 * [Azure AKS](https://docs.microsoft.com/en-us/azure/aks/)
 * [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/)
-* [.NET CLI](https://docs.microsoft.com/en-us/dotnet/core/tools/)
+* [.NET Core CLI](https://docs.microsoft.com/en-us/dotnet/core/tools/)
 * [Angular](https://angular.io/)
 * [Terraform](https://www.terraform.io/)
 * [Helm](https://helm.sh/)
