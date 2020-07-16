@@ -58,7 +58,7 @@ In the spirit of Kubernetes, objectives are:
 * Interchangable configuration across environments
 * Ability to scale without sacrificing automation and management capabilities
 
-Diagrams:
+Please view these diagrams to see visual representations of the project:
 * [Infrastructure][infrastructure-diagram]
 * [DevOps][devops-diagram]
 
