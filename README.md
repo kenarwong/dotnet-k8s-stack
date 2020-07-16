@@ -145,8 +145,10 @@ Project Link: [https://github.com/kenarwong/dotnet-k8s-stack](https://github.com
 ## Acknowledgements
 
 * [Kubernetes](https://kubernetes.io/)
-* [Azure AKS](https://github.com/Azure/AKS)
-* [Azure CLI](https://github.com/Azure/azure-cli)
+* [Azure AKS](https://docs.microsoft.com/en-us/azure/aks/)
+* [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/)
+* [.NET CLI](https://docs.microsoft.com/en-us/dotnet/core/tools/)
+* [Angular](https://angular.io/)
 * [Terraform](https://www.terraform.io/)
 * [Helm](https://helm.sh/)
 * [NGINX Ingress](https://kubernetes.github.io/ingress-nginx/)
