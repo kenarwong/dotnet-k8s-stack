@@ -38,7 +38,7 @@
 * [Usage](#usage)
 * [Roadmap](#roadmap)
 * [Contributing](#contributing)
-* [License](#license)
+<!-- * [License](#license) -->
 * [Contact](#contact)
 * [Acknowledgements](#acknowledgements)
 
@@ -58,6 +58,10 @@ In the spirit of Kubernetes, objectives are:
 * Built-in security, reliability, and monitoring
 * Interchangable configuration across environments
 * Ability to scale without sacrificing automation and management capabilities
+
+Diagrams:
+* [Infrastructure][infrastructure-diagram]
+* [DevOps][devops-diagram]
 
 <!-- FEATURES -->
 ## Features
@@ -165,3 +169,5 @@ Project Link: [https://github.com/kenarwong/dotnet-k8s-stack](https://github.com
 [issues-url]: https://github.com/kenarwong/dotnet-k8s-stack/issues
 [license-shield]: https://img.shields.io/github/license/kenarwong/dotnet-k8s-stack
 [product-screenshot]: images/screenshot.png
+[devops-diagram]: doc/diagrams/devops.jpg
+[infrastructure-diagram]: doc/diagrams/infrastructure.jpg
