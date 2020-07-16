@@ -38,10 +38,9 @@
 * [Usage](#usage)
 * [Roadmap](#roadmap)
 * [Contributing](#contributing)
-* [License](#license)
 * [Contact](#contact)
 * [Acknowledgements](#acknowledgements)
-
+<!-- * [License](#license) -->
 
 
 <!-- ABOUT THE PROJECT -->
@@ -49,7 +48,7 @@
 
 <!-- [![Product Name Screen Shot][product-screenshot]](https://example.com) -->
 
-The intention of this project is to perform a deep-dive into the features (and limitations) that Kubernetes has to offer, as well as using many open-source projects to make a real-world implementation possible.  The project is constructed on Azure Cloud infrastructure and Azure Kubernetes Service (AKS), but hopefully can be extended to other cloud providers and/or a self-managed cluster.
+The intention of this project is to perform a deep-dive into the features (and limitations) that Kubernetes has to offer, as well as using open-source projects to make a real-world implementation possible.  The project is constructed on Azure Cloud infrastructure and Azure Kubernetes Service (AKS), but hopefully can be extended to other cloud providers and/or a self-managed cluster.
 
 In the spirit of Kubernetes, objectives are:
 * A software-defined system that is extensively captured by source control
@@ -58,6 +57,10 @@ In the spirit of Kubernetes, objectives are:
 * Built-in security, reliability, and monitoring
 * Interchangable configuration across environments
 * Ability to scale without sacrificing automation and management capabilities
+
+Please view these diagrams to see visual representations of the project:
+* [Infrastructure][infrastructure-diagram]
+* [DevOps][devops-diagram]
 
 <!-- FEATURES -->
 ## Features
@@ -142,8 +145,10 @@ Project Link: [https://github.com/kenarwong/dotnet-k8s-stack](https://github.com
 ## Acknowledgements
 
 * [Kubernetes](https://kubernetes.io/)
-* [Azure AKS](https://github.com/Azure/AKS)
-* [Azure CLI](https://github.com/Azure/azure-cli)
+* [Azure AKS](https://docs.microsoft.com/en-us/azure/aks/)
+* [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/)
+* [.NET Core CLI](https://docs.microsoft.com/en-us/dotnet/core/tools/)
+* [Angular](https://angular.io/)
 * [Terraform](https://www.terraform.io/)
 * [Helm](https://helm.sh/)
 * [NGINX Ingress](https://kubernetes.github.io/ingress-nginx/)
@@ -165,3 +170,5 @@ Project Link: [https://github.com/kenarwong/dotnet-k8s-stack](https://github.com
 [issues-url]: https://github.com/kenarwong/dotnet-k8s-stack/issues
 [license-shield]: https://img.shields.io/github/license/kenarwong/dotnet-k8s-stack
 [product-screenshot]: images/screenshot.png
+[devops-diagram]: doc/diagrams/devops.jpg
+[infrastructure-diagram]: doc/diagrams/infrastructure.jpg
