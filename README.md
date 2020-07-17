@@ -86,10 +86,17 @@ To get a local copy up and running follow these simple steps.
 
 ### Prerequisites
 
-This is an example of how to list things you need to use the software and how to install them.
-* kubectl
-```sh
+You will need several tools to work with this project:
+* [az](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
+* [dotnet](https://docs.microsoft.com/en-us/dotnet/core/install)
+* [docker](https://www.docker.com/get-started)
+* [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl)
+* [helm](https://helm.sh/docs/intro/install)
+* [terraform](https://www.terraform.io/downloads.html)
 
+To begin on Azure, you will need a [subscription](https://azure.microsoft.com) and sufficient privileges to create several [service principals](https://docs.microsoft.com/en-us/azure/active-directory/develop/app-objects-and-service-principals#service-principal-object). To create a service prinicipal with Azure CLI:
+```sh
+az ad sp create-for-rbac --name ServicePrincipalName --skip-assignments
 ```
 
 ### Installation
