@@ -94,10 +94,22 @@ You will need several tools to work with this project:
 * [helm](https://helm.sh/docs/intro/install)
 * [terraform](https://www.terraform.io/downloads.html)
 
-To begin on Azure, you will need a [subscription](https://azure.microsoft.com) and sufficient privileges to create several [service principals](https://docs.microsoft.com/en-us/azure/active-directory/develop/app-objects-and-service-principals#service-principal-object). To create a service prinicipal with Azure CLI:
+To begin on Azure, you will need a [subscription](https://azure.microsoft.com) and sufficient privileges to create several [service principals](https://docs.microsoft.com/en-us/azure/active-directory/develop/app-objects-and-service-principals#service-principal-object).  The project uses a total of 3 service principals with different roles and responsibilities.  Separating the service principals in this manner satisfies the principle of least privilege.
+
+* The first service principal will require a Contributor role to the subscription.  This service principal will only be used to provision infrastructure resources during deployment to Azure.  To create this service principal with Azure CLI:
 ```sh
-az ad sp create-for-rbac --name ServicePrincipalName --skip-assignments
+az ad sp create-for-rbac --name "myAppProvisioner" --role contributor \
+                         --scopes /subscriptions/{subscription-id} \
+                         --sdk-auth
 ```
+Save the output of this command for later.
+
+* Next, two more service principals will be required.  One will be used for Kubernetes operations, and the other for Let's Encrypt DNS challenges.  We only need to create the service principals without any role assignments.  The roles will automatically be given specific scope to resources that will be created during provisioning.  To create these service principals with Azure CLI:
+```sh
+az ad sp create-for-rbac --name "myAppKubernetes" --skip-assignment
+az ad sp create-for-rbac --name "myAppCertificateManager" --skip-assignment
+```
+Save the output of these commands for later.
 
 ### Installation
  
