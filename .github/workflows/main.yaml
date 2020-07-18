@@ -3,7 +3,7 @@ name: dotnet-k8s-stack
 on:
   push:
     branches:
-      #- master
+      - master
       - dev
       - feature/**
 
