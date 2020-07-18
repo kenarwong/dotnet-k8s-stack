@@ -33,9 +33,12 @@
 * [About the Project](#about-the-project)
   * [Features](#features)
 * [Getting Started](#getting-started)
-  * [Prerequisites](#prerequisites)
-  * [Installation](#installation)
+  * [Domain Name](#domain-name)
+  * [Cloud](#cloud)
+    * [Azure](#azure)
+  * [Trigger a Deployment](#trigger-a-deployment)
 * [Usage](#usage)
+  * [Tools](#tools)
 * [Roadmap](#roadmap)
 * [Contributing](#contributing)
 * [Contact](#contact)
@@ -82,47 +85,75 @@ More features to come...
 <!-- GETTING STARTED -->
 ## Getting Started
 
-To get a local copy up and running follow these simple steps.
+To get started, fork the project into your own GitHub repository.  Then, you will need a public domain and a cloud environment.
 
-### Prerequisites
+### Domain Name
 
-You will need several tools to work with this project:
-* [az](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
-* [dotnet](https://docs.microsoft.com/en-us/dotnet/core/install)
-* [docker](https://www.docker.com/get-started)
-* [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl)
-* [helm](https://helm.sh/docs/intro/install)
-* [terraform](https://www.terraform.io/downloads.html)
+Acquire a public domain name.  The deployment will create DNS records on name servers, which we will setup in the public domain to delegate to those name servers.
+
+### Cloud
+
+Below are instructions on how to set up a cloud environment for different cloud providers.
+
+#### Azure
 
 To begin on Azure, you will need a [subscription](https://azure.microsoft.com) and sufficient privileges to create several [service principals](https://docs.microsoft.com/en-us/azure/active-directory/develop/app-objects-and-service-principals#service-principal-object).  The project uses a total of 3 service principals with different roles and responsibilities.  Separating the service principals in this manner satisfies the principle of least privilege.
 
-* The first service principal will require a Contributor role to the subscription.  This service principal will only be used to provision infrastructure resources during deployment to Azure.  To create this service principal with Azure CLI:
+1. The first service principal will require a Contributor role to the subscription.  This service principal will only be used to provision infrastructure resources during deployment to Azure.  To create this service principal with Azure CLI:
 ```sh
 az ad sp create-for-rbac --name "myAppProvisioner" --role contributor \
                          --scopes /subscriptions/{subscription-id} \
                          --sdk-auth
 ```
-Save the output of this command for later.
+Save the output of this command.
 
-* Next, two more service principals will be required.  One will be used for Kubernetes operations, and the other for Let's Encrypt DNS challenges.  We only need to create the service principals without any role assignments.  The roles will automatically be given specific scope to resources that will be created during provisioning.  To create these service principals with Azure CLI:
+2. Two more service principals will be required.  One will be used for Kubernetes operations, and the other for Let's Encrypt DNS challenges.  Only create the service principals without any role assignments.  During deployment, the roles will automatically be given specific scope to resources that will be created.  To create these service principals with Azure CLI:
 ```sh
 az ad sp create-for-rbac --name "myAppKubernetes" --skip-assignment
 az ad sp create-for-rbac --name "myAppCertificateManager" --skip-assignment
 ```
-Save the output of these commands for later.
+Save the output of these commands.  You will also need query for the object IDs for these service principals, since they are not provided by the default output.  To retrieve the object ID, supply the following Azure CLI command with the `appId` values from the above outputs:
+```sh
+az ad sp show --id <appId> --query objectId
+```
 
-### Installation
+3. In your repository's Settings > Secrets tab.  Enter the following secret values.
+
+| Secret Name                | Description                                                                            |
+|----------------------------|----------------------------------------------------------------------------------------|
+| ARM_CLIENT_ID              | The client ID from step 1                                                              |
+| ARM_CLIENT_SECRET          | The client secret from step 1                                                          |
+| AZURE_CREDENTIALS          | The entire JSON object from step 1                                                     |
+| AZURE_SUBSCRIPTION_ID      | The subscription ID from step 1                                                        |
+| AZURE_TENANT_ID            | The tenant ID from step 1                                                              |
+| CERT_MANAGER_CLIENT_ID     | The client ID for the certificate manager service principal from step 2                |
+| CERT_MANAGER_CLIENT_SECRET | The client secret (password) for the certificate manager service principal from step 2 |
+| CERT_MANAGER_OBJECT_ID     | The object ID for the certificate manager service principal from step 2                |
+| CERT_REGISTRATION_EMAIL    | An email to be used when registering your Let's Encrypt SSL certificate                |
+| K8S_CLIENT_ID              | The client ID for the kubernetes service principal from step 2                         |
+| K8S_CLIENT_SECRET          | The client secret (password) for the kubernetes service principal from step 2          |
+| K8s_OBJECT_ID              | The object ID for the kubernetes service principal from step 2                         |
+| PUBLIC_DOMAIN_NAME         | Your public domain name (e.g. example.com)                                             |
+
+### Trigger a Deployment
  
 1. Clone the repo
 ```sh
-git clone https://github.com/kenarwong/dotnet-k8s-stack.git
-```
-2. 
-```sh
-
+git clone https://github.com/<username>/dotnet-k8s-stack.git
 ```
 
+2. Edit the following values in the [workflow][workflow-yaml] file:
 
+| Environmental Variable       | Description                                                                              |
+|------------------------------|------------------------------------------------------------------------------------------|
+| LOCATION                     | The Azure data center location for your resources                                        |
+| TERRAFORM_BACKEND_GROUP_NAME | The resource group name for the terraform state file.                                    |
+| STORAGE_ACCOUNT_NAME         | The storage account for the terraform state file.  Only alphanumeric characters allowed. |
+| GROUP_NAME                   | The resource group name for this project's resources.                                    |
+| CLUSTER_NAME                 | The name of the Kubernetes cluster.                                                      |
+| ACR_NAME                     | The name of the Azure Container Repository.  Only alphanumeric characters allowed.       |
+
+3. Github Actions is configured to trigger a deployment on pushes to the repository.  See `on.push.branches` at the top of the [workflow][workflow-yaml] file.  Make a commit and push the changes to your repository.  GitHub Actions will then trigger a build and deploy.
 
 <!-- USAGE EXAMPLES -->
 ## Usage
@@ -132,6 +163,16 @@ git clone https://github.com/kenarwong/dotnet-k8s-stack.git
 _For more examples, please refer to the [Documentation](https://example.com)_
 
 -->
+
+### Tools
+
+You will need the following tools to work with this project:
+* [az](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
+* [dotnet](https://docs.microsoft.com/en-us/dotnet/core/install)
+* [docker](https://www.docker.com/get-started)
+* [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl)
+* [helm](https://helm.sh/docs/intro/install)
+* [terraform](https://www.terraform.io/downloads.html)
 
 <!-- ROADMAP -->
 ## Roadmap
@@ -191,3 +232,4 @@ Project Link: [https://github.com/kenarwong/dotnet-k8s-stack](https://github.com
 [product-screenshot]: images/screenshot.png
 [devops-diagram]: doc/diagrams/devops.jpg
 [infrastructure-diagram]: doc/diagrams/infrastructure.jpg
+[workflow-yaml]: .github/workflows/main.yaml
