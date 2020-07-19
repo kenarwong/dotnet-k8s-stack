@@ -19,8 +19,8 @@ env:
   ACR_NAME: kecoacr
   ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
   ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
-  ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
-  ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
+  ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+  ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
   DOMAIN_NAME: ${{ secrets.PUBLIC_DOMAIN_NAME }}
   CERT_ACME_SERVER: https://acme-staging-v02.api.letsencrypt.org/directory
   CERT_REGISTRATION_EMAIL: ${{ secrets.CERT_REGISTRATION_EMAIL }}
