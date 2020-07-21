@@ -45,8 +45,10 @@ jobs:
   printInputs:
     runs-on: ubuntu-latest
     steps:
-    - run: |
-        echo "Environment: ${{ github.event.inputs.environment }}"
+      - uses: actions/checkout@v2
+      - run: |
+          echo "Environment: ${{ github.event.inputs.environment }}"
+          cat ./config/"${{ github.event.inputs.environment }}".yaml
 
   #get-environment:
   #  runs-on: ubuntu-latest
