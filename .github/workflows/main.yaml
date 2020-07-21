@@ -9,15 +9,15 @@ on:
         default: 'dev'
 
 env:
-  PROVIDER: azure
-  LOCATION: eastus
-  TERRAFORM_BACKEND_GROUP_NAME: k-eco-terraform
-  STORAGE_ACCOUNT_NAME: kecoterraform
-  STORAGE_CONTAINER_NAME: terraform
-  STORAGE_CONTAINER_KEY: terraform.tfstate
-  GROUP_NAME: k-eco
-  CLUSTER_NAME: k-cluster
-  ACR_NAME: kecoacr
+  #PROVIDER: azure
+  #LOCATION: eastus
+  #TERRAFORM_BACKEND_GROUP_NAME: k-eco-terraform
+  #STORAGE_ACCOUNT_NAME: kecoterraform
+  #STORAGE_CONTAINER_NAME: terraform
+  #STORAGE_CONTAINER_KEY: terraform.tfstate
+  #GROUP_NAME: k-eco
+  #CLUSTER_NAME: k-cluster
+  #ACR_NAME: kecoacr
   ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
   ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
   ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
@@ -33,22 +33,29 @@ env:
   K8S_CLIENT_ID: ${{ secrets.K8S_CLIENT_ID }}
   K8S_CLIENT_SECRET: ${{ secrets.K8S_CLIENT_SECRET }}
   K8S_OBJECT_ID: ${{ secrets.K8S_OBJECT_ID }}
-  SQL_IMAGE_NAME: adventureworks2017-mssql2019-ubuntu16.04-backup-only
-  SQL_IMAGE_VERSION: "1.0"
-  API_IMAGE_NAME: adventureworks-api-dotnet3.1
-  API_IMAGE_VERSION: "1.0"
-  APP_IMAGE_NAME: adventureworks-app-dotnet3.1
-  APP_IMAGE_VERSION: "1.0"
-  HELM_INSTALL_NAME: adventureworks
+  #SQL_IMAGE_NAME: adventureworks2017-mssql2019-ubuntu16.04-backup-only
+  #SQL_IMAGE_VERSION: "1.0"
+  #API_IMAGE_NAME: adventureworks-api-dotnet3.1
+  #API_IMAGE_VERSION: "1.0"
+  #APP_IMAGE_NAME: adventureworks-app-dotnet3.1
+  #APP_IMAGE_VERSION: "1.0"
+  #HELM_INSTALL_NAME: adventureworks
 
 jobs:
-  printInputs:
+  set-env:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - run: |
-          echo "Environment: ${{ github.event.inputs.environment }}"
+          echo "ENVIRONMENT: ${{ github.event.inputs.environment }}"
           cat ./config/"${{ github.event.inputs.environment }}".yaml
+
+      - run: |
+          echo "::set-env name=ENVIRONMENT::${{ github.event.inputs.environment }}"
+
+      - run: |
+          echo $ENVIRONMENT
+          
 
   #get-environment:
   #  runs-on: ubuntu-latest
