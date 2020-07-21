@@ -1,28 +1,19 @@
 name: dotnet-k8s-stack
 
 on:
-  push:
-    branches:
-      - master
-      - dev
-      - feature/**
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment'
+        required: true
+        default: 'dev'
 
 env:
-  PROVIDER: azure
-  LOCATION: eastus
-  TERRAFORM_BACKEND_GROUP_NAME: k-eco-terraform
-  STORAGE_ACCOUNT_NAME: kecoterraform
-  STORAGE_CONTAINER_NAME: terraform
-  STORAGE_CONTAINER_KEY: terraform.tfstate
-  GROUP_NAME: k-eco
-  CLUSTER_NAME: k-cluster
-  ACR_NAME: kecoacr
   ARM_CLIENT_ID: ${{ secrets.ARM_CLIENT_ID }}
   ARM_CLIENT_SECRET: ${{ secrets.ARM_CLIENT_SECRET }}
   ARM_SUBSCRIPTION_ID: ${{ secrets.ARM_SUBSCRIPTION_ID }}
   ARM_TENANT_ID: ${{ secrets.ARM_TENANT_ID }}
   DOMAIN_NAME: ${{ secrets.PUBLIC_DOMAIN_NAME }}
-  CERT_ACME_SERVER: https://acme-staging-v02.api.letsencrypt.org/directory
   CERT_REGISTRATION_EMAIL: ${{ secrets.CERT_REGISTRATION_EMAIL }}
   CERT_MANAGER_CLIENT_ID: ${{ secrets.CERT_MANAGER_CLIENT_ID }}
   CERT_MANAGER_OBJECT_ID: ${{ secrets.CERT_MANAGER_OBJECT_ID }}
@@ -32,46 +23,22 @@ env:
   K8S_CLIENT_ID: ${{ secrets.K8S_CLIENT_ID }}
   K8S_CLIENT_SECRET: ${{ secrets.K8S_CLIENT_SECRET }}
   K8S_OBJECT_ID: ${{ secrets.K8S_OBJECT_ID }}
-  SQL_IMAGE_NAME: adventureworks2017-mssql2019-ubuntu16.04-backup-only
-  SQL_IMAGE_VERSION: "1.0"
-  API_IMAGE_NAME: adventureworks-api-dotnet3.1
-  API_IMAGE_VERSION: "1.0"
-  APP_IMAGE_NAME: adventureworks-app-dotnet3.1
-  APP_IMAGE_VERSION: "1.0"
-  HELM_INSTALL_NAME: adventureworks
 
 jobs:
-  get-environment:
-    runs-on: ubuntu-latest
-    outputs:
-      environment: ${{ steps.output.outputs.environment }}
-    
-    steps:
-      - name: 'Set environment to dev'
-        if: contains(github.ref, 'feature')
-        run: |
-          echo "::set-env name=ENVIRONMENT::dev"
-
-      - name: 'Set environment to dev'
-        if: endsWith(github.ref, '/dev')
-        run: |
-          echo "::set-env name=ENVIRONMENT::dev"
-
-      - name: 'Set environment to prod'
-        if: endsWith(github.ref, '/master')
-        run: |
-          echo "::set-env name=ENVIRONMENT::prod"
-
-      - name: 'Output environment'
-        id: output
-        run: |
-          echo "::set-output name=environment::$ENVIRONMENT"
-
   backend:
     runs-on: ubuntu-latest
     
     steps:
       - uses: actions/checkout@v2
+
+      - name: 'Set environmental variables'
+        run: |
+          echo "::set-env name=ENVIRONMENT::${{ github.event.inputs.environment }}"
+          declare -A variables
+          while IFS=": " read variable val
+          do
+            echo "::set-env name=$variable::$val"
+          done < $GITHUB_WORKSPACE/config/${{ github.event.inputs.environment }}.yaml
 
       - name: 'Login via Azure CLI'
         uses: azure/login@v1
@@ -85,7 +52,7 @@ jobs:
           $GITHUB_WORKSPACE/infrastructure/terraform/$PROVIDER/backend/setup-terraform-backend.sh -g $TERRAFORM_BACKEND_GROUP_NAME -l $LOCATION --storage-account-name $STORAGE_ACCOUNT_NAME --storage-container-name $STORAGE_CONTAINER_NAME
 
   infrastructure:
-    needs: [get-environment, backend]
+    needs: [backend]
     runs-on: ubuntu-latest
     env:
       TFVARS_FILE: "workflow.tfvars"
@@ -100,6 +67,15 @@ jobs:
         with:
           terraform_version: 0.12.28
           terraform_wrapper: false
+
+      - name: 'Set environmental variables'
+        run: |
+          echo "::set-env name=ENVIRONMENT::${{ github.event.inputs.environment }}"
+          declare -A variables
+          while IFS=": " read variable val
+          do
+            echo "::set-env name=$variable::$val"
+          done < $GITHUB_WORKSPACE/config/${{ github.event.inputs.environment }}.yaml
 
       - name: 'Set working directory'
         run: |
@@ -119,7 +95,7 @@ jobs:
           acr_sp_object_id            = "$K8S_OBJECT_ID"
           cert_manager_sp_object_id   = "$CERT_MANAGER_OBJECT_ID"
           vnet_sp_object_id           = "$K8S_OBJECT_ID"
-          environment                 = "${{ needs.get-environment.outputs.environment }}"
+          environment                 = "$ENVIRONMENT"
           EOF
 
       - name: 'terraform fmt'
@@ -173,13 +149,22 @@ jobs:
           echo "::set-output name=aks_cluster_group::"$AKS_CLUSTER_GROUP""
 
   image:
-    needs: infrastructure
+    needs: [infrastructure]
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: ./image
     steps:
       - uses: actions/checkout@v2
+
+      - name: 'Set environmental variables'
+        run: |
+          echo "::set-env name=ENVIRONMENT::${{ github.event.inputs.environment }}"
+          declare -A variables
+          while IFS=": " read variable val
+          do
+            echo "::set-env name=$variable::$val"
+          done < $GITHUB_WORKSPACE/config/${{ github.event.inputs.environment }}.yaml
 
       - name: 'Login to Azure ACR'
         id: acr-login
@@ -215,7 +200,7 @@ jobs:
           docker push ${{ needs.infrastructure.outputs.acr_login_server }}/$APP_IMAGE_NAME:$APP_IMAGE_VERSION
 
   orchestration:
-    needs: [get-environment, image, infrastructure]
+    needs: [image, infrastructure]
     runs-on: ubuntu-latest
     env:
       HELM_VARIABLES_FILE: "vars.yaml"
@@ -226,6 +211,15 @@ jobs:
         working-directory: ./orchestration
     steps:
       - uses: actions/checkout@v2
+
+      - name: 'Set environmental variables'
+        run: |
+          echo "::set-env name=ENVIRONMENT::${{ github.event.inputs.environment }}"
+          declare -A variables
+          while IFS=": " read variable val
+          do
+            echo "::set-env name=$variable::$val"
+          done < $GITHUB_WORKSPACE/config/${{ github.event.inputs.environment }}.yaml
 
       - name: 'Login via Azure CLI'
         uses: azure/login@v1
@@ -241,7 +235,7 @@ jobs:
         id: replace-helm-tokens
         run: |
           cat <<EOF > $HELM_VARIABLES_FILE
-            ENVIRONMENT: ${{ needs.get-environment.outputs.environment }}
+            ENVIRONMENT: $ENVIRONMENT
             CLUSTER_NAME: $CLUSTER_NAME
             IP_ADDRESS: ${{ needs.infrastructure.outputs.ip_address }}
             DOMAIN_NAME: $DOMAIN_NAME
@@ -273,4 +267,4 @@ jobs:
       - name: 'helm install'
         id: helm-install
         run: |
-          helm upgrade -i -f $HELM_VALUES_FILE $HELM_INSTALL_NAME --create-namespace -n ${{ needs.get-environment.outputs.environment }} --atomic .
+          helm upgrade -i -f $HELM_VALUES_FILE $HELM_INSTALL_NAME --create-namespace -n $ENVIRONMENT --atomic .
