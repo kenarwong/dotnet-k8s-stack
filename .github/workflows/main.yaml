@@ -52,10 +52,15 @@ jobs:
 
       - run: |
           echo "::set-env name=ENVIRONMENT::${{ github.event.inputs.environment }}"
+          declare -A variables
+          while IFS=": " read variable val
+          do
+            echo "::set-env name=$variable::$val"
+          done < ./config/"${{ github.event.inputs.environment }}".yaml
 
       - run: |
           echo $ENVIRONMENT
-          
+          echo $PROVIDER
 
   #get-environment:
   #  runs-on: ubuntu-latest
