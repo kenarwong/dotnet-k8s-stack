@@ -64,208 +64,217 @@ jobs:
   backend:
     needs: [set-env]
     runs-on: ubuntu-latest
-    
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: 'Login via Azure CLI'
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-      
-      - name: 'Set-up terraform backend'
-        id: setup-terraform-backend
-        run: |
-          chmod +x $GITHUB_WORKSPACE/infrastructure/terraform/$PROVIDER/backend/setup-terraform-backend.sh
-          $GITHUB_WORKSPACE/infrastructure/terraform/$PROVIDER/backend/setup-terraform-backend.sh -g $TERRAFORM_BACKEND_GROUP_NAME -l $LOCATION --storage-account-name $STORAGE_ACCOUNT_NAME --storage-container-name $STORAGE_CONTAINER_NAME
-
-  infrastructure:
-    needs: [backend]
-    runs-on: ubuntu-latest
-    env:
-      TFVARS_FILE: "workflow.tfvars"
-    outputs:
-      ip_address: ${{ steps.output.outputs.ip_address }}
-      acr_login_server: ${{ steps.output.outputs.acr_login_server }}
-      aks_cluster_group: ${{ steps.output.outputs.aks_cluster_group }}
 
     steps:
-      - uses: actions/checkout@v2
-      - uses: hashicorp/setup-terraform@v1
-        with:
-          terraform_version: 0.12.28
-          terraform_wrapper: false
+      - run: |
+          echo $ENVIRONMENT
+          echo $PROVIDER
 
-      - name: 'Set working directory'
-        run: |
-          echo "::set-env name=WORKING_DIRECTORY::$GITHUB_WORKSPACE/infrastructure/terraform/$PROVIDER/"
-      
-      - name: 'create tfvars file'
-        run: |
-          cd $WORKING_DIRECTORY
-          cat <<EOF > $TFVARS_FILE
-          resource_group_name         = "$GROUP_NAME"
-          location                    = "$LOCATION"
-          cluster_name                = "$CLUSTER_NAME"
-          domain_name                 = "$DOMAIN_NAME"
-          acr_name                    = "$ACR_NAME"
-          aks_sp_client_id            = "$K8S_CLIENT_ID"
-          aks_sp_client_secret        = "$K8S_CLIENT_SECRET"
-          acr_sp_object_id            = "$K8S_OBJECT_ID"
-          cert_manager_sp_object_id   = "$CERT_MANAGER_OBJECT_ID"
-          vnet_sp_object_id           = "$K8S_OBJECT_ID"
-          environment                 = "$ENVIRONMENT"
-          EOF
+  #backend:
+  #  needs: [set-env]
+  #  runs-on: ubuntu-latest
+  #  
+  #  steps:
+  #    - uses: actions/checkout@v2
 
-      - name: 'terraform fmt'
-        id: fmt
-        run: |
-          cd $WORKING_DIRECTORY
-          terraform fmt
-        continue-on-error: true
+  #    - name: 'Login via Azure CLI'
+  #      uses: azure/login@v1
+  #      with:
+  #        creds: ${{ secrets.AZURE_CREDENTIALS }}
+  #    
+  #    - name: 'Set-up terraform backend'
+  #      id: setup-terraform-backend
+  #      run: |
+  #        chmod +x $GITHUB_WORKSPACE/infrastructure/terraform/$PROVIDER/backend/setup-terraform-backend.sh
+  #        $GITHUB_WORKSPACE/infrastructure/terraform/$PROVIDER/backend/setup-terraform-backend.sh -g $TERRAFORM_BACKEND_GROUP_NAME -l $LOCATION --storage-account-name $STORAGE_ACCOUNT_NAME --storage-container-name $STORAGE_CONTAINER_NAME
 
-      - name: 'terraform init'
-        id: init
-        run: |
-          cd $WORKING_DIRECTORY
-          terraform init \
-            -backend-config="resource_group_name=$TERRAFORM_BACKEND_GROUP_NAME" \
-            -backend-config="storage_account_name=$STORAGE_ACCOUNT_NAME" \
-            -backend-config="container_name=$STORAGE_CONTAINER_NAME" \
-            -backend-config="key=$STORAGE_CONTAINER_KEY" \
-      
-      - name: 'terraform validate'
-        id: validate
-        run: |
-          cd $WORKING_DIRECTORY
-          terraform validate -no-color
-      
-      - name: 'terraform plan'
-        id: plan
-        run: |
-          cd $WORKING_DIRECTORY
-          terraform plan -no-color \
-            -var-file "$TFVARS_FILE"
-      
-      - name: 'terraform apply'
-        id: apply
-        run: |
-          cd $WORKING_DIRECTORY
-          terraform apply --auto-approve \
-            -var-file "$TFVARS_FILE"
+  #infrastructure:
+  #  needs: [backend]
+  #  runs-on: ubuntu-latest
+  #  env:
+  #    TFVARS_FILE: "workflow.tfvars"
+  #  outputs:
+  #    ip_address: ${{ steps.output.outputs.ip_address }}
+  #    acr_login_server: ${{ steps.output.outputs.acr_login_server }}
+  #    aks_cluster_group: ${{ steps.output.outputs.aks_cluster_group }}
 
-      - name: 'terraform output'
-        id: output
-        run: |
-          cd $WORKING_DIRECTORY
-          echo "Azure DNS name servers"
-          terraform output name_servers
-          IP_ADDRESS="$(terraform output ip_address)"
-          ACR_LOGIN_SERVER="$(terraform output acr_login_server)"
-          AKS_CLUSTER_GROUP="$(terraform output aks_cluster_group)"
-          echo "::set-output name=ip_address::"$IP_ADDRESS""
-          echo "::set-output name=acr_login_server::"$ACR_LOGIN_SERVER""
-          echo "::set-output name=aks_cluster_group::"$AKS_CLUSTER_GROUP""
+  #  steps:
+  #    - uses: actions/checkout@v2
+  #    - uses: hashicorp/setup-terraform@v1
+  #      with:
+  #        terraform_version: 0.12.28
+  #        terraform_wrapper: false
 
-  image:
-    needs: [infrastructure]
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./image
-    steps:
-      - uses: actions/checkout@v2
+  #    - name: 'Set working directory'
+  #      run: |
+  #        echo "::set-env name=WORKING_DIRECTORY::$GITHUB_WORKSPACE/infrastructure/terraform/$PROVIDER/"
+  #    
+  #    - name: 'create tfvars file'
+  #      run: |
+  #        cd $WORKING_DIRECTORY
+  #        cat <<EOF > $TFVARS_FILE
+  #        resource_group_name         = "$GROUP_NAME"
+  #        location                    = "$LOCATION"
+  #        cluster_name                = "$CLUSTER_NAME"
+  #        domain_name                 = "$DOMAIN_NAME"
+  #        acr_name                    = "$ACR_NAME"
+  #        aks_sp_client_id            = "$K8S_CLIENT_ID"
+  #        aks_sp_client_secret        = "$K8S_CLIENT_SECRET"
+  #        acr_sp_object_id            = "$K8S_OBJECT_ID"
+  #        cert_manager_sp_object_id   = "$CERT_MANAGER_OBJECT_ID"
+  #        vnet_sp_object_id           = "$K8S_OBJECT_ID"
+  #        environment                 = "$ENVIRONMENT"
+  #        EOF
 
-      - name: 'Login to Azure ACR'
-        id: acr-login
-        run: |
-          docker login "${{ needs.infrastructure.outputs.acr_login_server }}" --username $ARM_CLIENT_ID --password $ARM_CLIENT_SECRET
+  #    - name: 'terraform fmt'
+  #      id: fmt
+  #      run: |
+  #        cd $WORKING_DIRECTORY
+  #        terraform fmt
+  #      continue-on-error: true
 
-      - name: 'Get backup'
-        id: get-backup
-        run: |
-          cd sql
-          chmod +x run-to-get-bak.sh
-          ./run-to-get-bak.sh 
+  #    - name: 'terraform init'
+  #      id: init
+  #      run: |
+  #        cd $WORKING_DIRECTORY
+  #        terraform init \
+  #          -backend-config="resource_group_name=$TERRAFORM_BACKEND_GROUP_NAME" \
+  #          -backend-config="storage_account_name=$STORAGE_ACCOUNT_NAME" \
+  #          -backend-config="container_name=$STORAGE_CONTAINER_NAME" \
+  #          -backend-config="key=$STORAGE_CONTAINER_KEY" \
+  #    
+  #    - name: 'terraform validate'
+  #      id: validate
+  #      run: |
+  #        cd $WORKING_DIRECTORY
+  #        terraform validate -no-color
+  #    
+  #    - name: 'terraform plan'
+  #      id: plan
+  #      run: |
+  #        cd $WORKING_DIRECTORY
+  #        terraform plan -no-color \
+  #          -var-file "$TFVARS_FILE"
+  #    
+  #    - name: 'terraform apply'
+  #      id: apply
+  #      run: |
+  #        cd $WORKING_DIRECTORY
+  #        terraform apply --auto-approve \
+  #          -var-file "$TFVARS_FILE"
 
-      - name: 'Build sql image'
-        id: build-sql-image
-        run: |
-          cd sql
-          docker build . -t ${{ needs.infrastructure.outputs.acr_login_server }}/$SQL_IMAGE_NAME:$SQL_IMAGE_VERSION
-          docker push ${{ needs.infrastructure.outputs.acr_login_server }}/$SQL_IMAGE_NAME:$SQL_IMAGE_VERSION
+  #    - name: 'terraform output'
+  #      id: output
+  #      run: |
+  #        cd $WORKING_DIRECTORY
+  #        echo "Azure DNS name servers"
+  #        terraform output name_servers
+  #        IP_ADDRESS="$(terraform output ip_address)"
+  #        ACR_LOGIN_SERVER="$(terraform output acr_login_server)"
+  #        AKS_CLUSTER_GROUP="$(terraform output aks_cluster_group)"
+  #        echo "::set-output name=ip_address::"$IP_ADDRESS""
+  #        echo "::set-output name=acr_login_server::"$ACR_LOGIN_SERVER""
+  #        echo "::set-output name=aks_cluster_group::"$AKS_CLUSTER_GROUP""
 
-      - name: 'Build api image'
-        id: build-api-image
-        run: |
-          cd api
-          docker build . -t ${{ needs.infrastructure.outputs.acr_login_server }}/$API_IMAGE_NAME:$API_IMAGE_VERSION
-          docker push ${{ needs.infrastructure.outputs.acr_login_server }}/$API_IMAGE_NAME:$API_IMAGE_VERSION
+  #image:
+  #  needs: [infrastructure]
+  #  runs-on: ubuntu-latest
+  #  defaults:
+  #    run:
+  #      working-directory: ./image
+  #  steps:
+  #    - uses: actions/checkout@v2
 
-      - name: 'Build app image'
-        id: build-app-image
-        run: |
-          cd app
-          docker build . -t ${{ needs.infrastructure.outputs.acr_login_server }}/$APP_IMAGE_NAME:$APP_IMAGE_VERSION
-          docker push ${{ needs.infrastructure.outputs.acr_login_server }}/$APP_IMAGE_NAME:$APP_IMAGE_VERSION
+  #    - name: 'Login to Azure ACR'
+  #      id: acr-login
+  #      run: |
+  #        docker login "${{ needs.infrastructure.outputs.acr_login_server }}" --username $ARM_CLIENT_ID --password $ARM_CLIENT_SECRET
 
-  orchestration:
-    needs: [image, infrastructure]
-    runs-on: ubuntu-latest
-    env:
-      HELM_VARIABLES_FILE: "vars.yaml"
-      HELM_TEMPLATE_FILE: "values-template.yaml"
-      HELM_VALUES_FILE: "values.yaml"
-    defaults:
-      run:
-        working-directory: ./orchestration
-    steps:
-      - uses: actions/checkout@v2
+  #    - name: 'Get backup'
+  #      id: get-backup
+  #      run: |
+  #        cd sql
+  #        chmod +x run-to-get-bak.sh
+  #        ./run-to-get-bak.sh 
 
-      - name: 'Login via Azure CLI'
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-      
-      - name: 'Get AKS credentials'
-        id: get-aks-credentials
-        run: |
-            az aks get-credentials -g $GROUP_NAME -n $CLUSTER_NAME --overwrite
+  #    - name: 'Build sql image'
+  #      id: build-sql-image
+  #      run: |
+  #        cd sql
+  #        docker build . -t ${{ needs.infrastructure.outputs.acr_login_server }}/$SQL_IMAGE_NAME:$SQL_IMAGE_VERSION
+  #        docker push ${{ needs.infrastructure.outputs.acr_login_server }}/$SQL_IMAGE_NAME:$SQL_IMAGE_VERSION
 
-      - name: 'Replace Helm tokens'
-        id: replace-helm-tokens
-        run: |
-          cat <<EOF > $HELM_VARIABLES_FILE
-            ENVIRONMENT: $ENVIRONMENT
-            CLUSTER_NAME: $CLUSTER_NAME
-            IP_ADDRESS: ${{ needs.infrastructure.outputs.ip_address }}
-            DOMAIN_NAME: $DOMAIN_NAME
-            CERT_ACME_SERVER: $CERT_ACME_SERVER
-            CERT_REGISTRATION_EMAIL: $CERT_REGISTRATION_EMAIL
-            CERT_MANAGER_CLIENT_ID: $CERT_MANAGER_CLIENT_ID
-            CERT_MANAGER_CLIENT_SECRET: $(echo -n "$CERT_MANAGER_CLIENT_SECRET" | base64)
-            AZURE_TENANT_ID: $AZURE_TENANT_ID
-            AZURE_SUBSCRIPTION_ID: $AZURE_SUBSCRIPTION_ID
-            AZURE_DNS_ZONE_RESOURCE_GROUP: $GROUP_NAME 
-            AZURE_IP_ADDRESS_RESOURCE_GROUP: $GROUP_NAME
-            ACR_LOGIN_SERVER: ${{ needs.infrastructure.outputs.acr_login_server }}
-            SQL_IMAGE_NAME: $SQL_IMAGE_NAME
-            SQL_IMAGE_VERSION: $SQL_IMAGE_VERSION
-            API_IMAGE_NAME: $API_IMAGE_NAME
-            API_IMAGE_VERSION: $API_IMAGE_VERSION
-            APP_IMAGE_NAME: $APP_IMAGE_NAME
-            APP_IMAGE_VERSION: $APP_IMAGE_VERSION
-          EOF
+  #    - name: 'Build api image'
+  #      id: build-api-image
+  #      run: |
+  #        cd api
+  #        docker build . -t ${{ needs.infrastructure.outputs.acr_login_server }}/$API_IMAGE_NAME:$API_IMAGE_VERSION
+  #        docker push ${{ needs.infrastructure.outputs.acr_login_server }}/$API_IMAGE_NAME:$API_IMAGE_VERSION
 
-          chmod +x replace-helm-tokens.sh
-          ./replace-helm-tokens.sh -f $HELM_VARIABLES_FILE --template-file $HELM_TEMPLATE_FILE --output-file $HELM_VALUES_FILE
+  #    - name: 'Build app image'
+  #      id: build-app-image
+  #      run: |
+  #        cd app
+  #        docker build . -t ${{ needs.infrastructure.outputs.acr_login_server }}/$APP_IMAGE_NAME:$APP_IMAGE_VERSION
+  #        docker push ${{ needs.infrastructure.outputs.acr_login_server }}/$APP_IMAGE_NAME:$APP_IMAGE_VERSION
 
-      - name: 'helm dependency update'
-        id: helm-dependency-update
-        run: |
-          helm dependency update
+  #orchestration:
+  #  needs: [image, infrastructure]
+  #  runs-on: ubuntu-latest
+  #  env:
+  #    HELM_VARIABLES_FILE: "vars.yaml"
+  #    HELM_TEMPLATE_FILE: "values-template.yaml"
+  #    HELM_VALUES_FILE: "values.yaml"
+  #  defaults:
+  #    run:
+  #      working-directory: ./orchestration
+  #  steps:
+  #    - uses: actions/checkout@v2
 
-      - name: 'helm install'
-        id: helm-install
-        run: |
-          helm upgrade -i -f $HELM_VALUES_FILE $HELM_INSTALL_NAME --create-namespace -n $ENVIRONMENT --atomic .
+  #    - name: 'Login via Azure CLI'
+  #      uses: azure/login@v1
+  #      with:
+  #        creds: ${{ secrets.AZURE_CREDENTIALS }}
+  #    
+  #    - name: 'Get AKS credentials'
+  #      id: get-aks-credentials
+  #      run: |
+  #          az aks get-credentials -g $GROUP_NAME -n $CLUSTER_NAME --overwrite
+
+  #    - name: 'Replace Helm tokens'
+  #      id: replace-helm-tokens
+  #      run: |
+  #        cat <<EOF > $HELM_VARIABLES_FILE
+  #          ENVIRONMENT: $ENVIRONMENT
+  #          CLUSTER_NAME: $CLUSTER_NAME
+  #          IP_ADDRESS: ${{ needs.infrastructure.outputs.ip_address }}
+  #          DOMAIN_NAME: $DOMAIN_NAME
+  #          CERT_ACME_SERVER: $CERT_ACME_SERVER
+  #          CERT_REGISTRATION_EMAIL: $CERT_REGISTRATION_EMAIL
+  #          CERT_MANAGER_CLIENT_ID: $CERT_MANAGER_CLIENT_ID
+  #          CERT_MANAGER_CLIENT_SECRET: $(echo -n "$CERT_MANAGER_CLIENT_SECRET" | base64)
+  #          AZURE_TENANT_ID: $AZURE_TENANT_ID
+  #          AZURE_SUBSCRIPTION_ID: $AZURE_SUBSCRIPTION_ID
+  #          AZURE_DNS_ZONE_RESOURCE_GROUP: $GROUP_NAME 
+  #          AZURE_IP_ADDRESS_RESOURCE_GROUP: $GROUP_NAME
+  #          ACR_LOGIN_SERVER: ${{ needs.infrastructure.outputs.acr_login_server }}
+  #          SQL_IMAGE_NAME: $SQL_IMAGE_NAME
+  #          SQL_IMAGE_VERSION: $SQL_IMAGE_VERSION
+  #          API_IMAGE_NAME: $API_IMAGE_NAME
+  #          API_IMAGE_VERSION: $API_IMAGE_VERSION
+  #          APP_IMAGE_NAME: $APP_IMAGE_NAME
+  #          APP_IMAGE_VERSION: $APP_IMAGE_VERSION
+  #        EOF
+
+  #        chmod +x replace-helm-tokens.sh
+  #        ./replace-helm-tokens.sh -f $HELM_VARIABLES_FILE --template-file $HELM_TEMPLATE_FILE --output-file $HELM_VALUES_FILE
+
+  #    - name: 'helm dependency update'
+  #      id: helm-dependency-update
+  #      run: |
+  #        helm dependency update
+
+  #    - name: 'helm install'
+  #      id: helm-install
+  #      run: |
+  #        helm upgrade -i -f $HELM_VALUES_FILE $HELM_INSTALL_NAME --create-namespace -n $ENVIRONMENT --atomic .
