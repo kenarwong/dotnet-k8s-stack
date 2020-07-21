@@ -38,7 +38,7 @@ jobs:
           while IFS=": " read variable val
           do
             echo "::set-env name=$variable::$val"
-          done < $GITHUB_WORKSPACE/config/"${{ github.event.inputs.environment }}".yaml
+          done < $GITHUB_WORKSPACE/config/${{ github.event.inputs.environment }}.yaml
 
       - name: 'Login via Azure CLI'
         uses: azure/login@v1
@@ -75,7 +75,7 @@ jobs:
           while IFS=": " read variable val
           do
             echo "::set-env name=$variable::$val"
-          done < $GITHUB_WORKSPACE/config/"${{ github.event.inputs.environment }}".yaml
+          done < $GITHUB_WORKSPACE/config/${{ github.event.inputs.environment }}.yaml
 
       - name: 'Set working directory'
         run: |
@@ -164,7 +164,7 @@ jobs:
           while IFS=": " read variable val
           do
             echo "::set-env name=$variable::$val"
-          done < $GITHUB_WORKSPACE/config/"${{ github.event.inputs.environment }}".yaml
+          done < $GITHUB_WORKSPACE/config/${{ github.event.inputs.environment }}.yaml
 
       - name: 'Login to Azure ACR'
         id: acr-login
@@ -219,7 +219,7 @@ jobs:
           while IFS=": " read variable val
           do
             echo "::set-env name=$variable::$val"
-          done < $GITHUB_WORKSPACE/config/"${{ github.event.inputs.environment }}".yaml
+          done < $GITHUB_WORKSPACE/config/${{ github.event.inputs.environment }}.yaml
 
       - name: 'Login via Azure CLI'
         uses: azure/login@v1
