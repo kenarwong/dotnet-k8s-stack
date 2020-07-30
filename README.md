@@ -142,7 +142,7 @@ az ad sp show --id <appId> --query objectId
 git clone https://github.com/<username>/dotnet-k8s-stack.git
 ```
 
-2. Edit the following values in the [workflow][workflow-yaml] file:
+2. Edit the following values in the configuration files in the [config folder][config-folder]:
 
 | Environmental Variable       | Description                                                                              |
 |------------------------------|------------------------------------------------------------------------------------------|
@@ -153,7 +153,7 @@ git clone https://github.com/<username>/dotnet-k8s-stack.git
 | CLUSTER_NAME                 | The name of the Kubernetes cluster.                                                      |
 | ACR_NAME                     | The name of the Azure Container Repository.  Only alphanumeric characters allowed.       |
 
-3. Github Actions is configured to trigger a deployment on pushes to the repository.  See `on.push.branches` at the top of the [workflow][workflow-yaml] file.  Make a commit and push the changes to your repository.  GitHub Actions will then trigger a build and deploy.
+3. Github Actions is configured with `workflow_dispatch`.  See `on.workflow_dispatch` at the top of the [workflow][workflow-yaml] file.  Now you should be able to trigger a deployment from the Actions tab.  When running the workflow, select the appropriate branch and provide an <em>Environment</em> variable.  Acceptable values are the names of the files in the [config folder][config-folder] (e.g. `dev`, `prod`).
 
 <!-- USAGE EXAMPLES -->
 ## Usage
@@ -232,4 +232,5 @@ Project Link: [https://github.com/kenarwong/dotnet-k8s-stack](https://github.com
 [product-screenshot]: images/screenshot.png
 [devops-diagram]: doc/diagrams/devops.jpg
 [infrastructure-diagram]: doc/diagrams/infrastructure.jpg
+[config-folder]: config
 [workflow-yaml]: .github/workflows/main.yaml
