@@ -169,7 +169,7 @@ jobs:
       - name: 'Login to Azure ACR'
         id: acr-login
         run: |
-          docker login "${{ needs.infrastructure.outputs.acr_login_server }}" --username $ARM_CLIENT_ID --password $ARM_CLIENT_SECRET
+           echo "$ARM_CLIENT_SECRET" | docker login "${{ needs.infrastructure.outputs.acr_login_server }}" --username $ARM_CLIENT_ID --password-stdin
 
       - name: 'Get backup'
         id: get-backup
