@@ -33,11 +33,11 @@ jobs:
 
       - name: 'Set environmental variables'
         run: |
-          echo "::set-env name=ENVIRONMENT::${{ github.event.inputs.environment }}"
+          echo "ENVIRONMENT=${{ github.event.inputs.environment }}" >> $GITHUB_ENV
           declare -A variables
           while IFS=": " read variable val
           do
-            echo "::set-env name=$variable::$val"
+            echo "$variable=$val" >> $GITHUB_ENV
           done < $GITHUB_WORKSPACE/config/${{ github.event.inputs.environment }}.yaml
 
       - name: 'Login via Azure CLI'
@@ -70,16 +70,16 @@ jobs:
 
       - name: 'Set environmental variables'
         run: |
-          echo "::set-env name=ENVIRONMENT::${{ github.event.inputs.environment }}"
+          echo "ENVIRONMENT=${{ github.event.inputs.environment }}" >> $GITHUB_ENV
           declare -A variables
           while IFS=": " read variable val
           do
-            echo "::set-env name=$variable::$val"
+            echo "$variable=$val" >> $GITHUB_ENV
           done < $GITHUB_WORKSPACE/config/${{ github.event.inputs.environment }}.yaml
 
       - name: 'Set working directory'
         run: |
-          echo "::set-env name=WORKING_DIRECTORY::$GITHUB_WORKSPACE/infrastructure/terraform/$PROVIDER/"
+          echo "WORKING_DIRECTORY=$GITHUB_WORKSPACE/infrastructure/terraform/$PROVIDER/" >> $GITHUB_ENV
       
       - name: 'create tfvars file'
         run: |
@@ -159,11 +159,11 @@ jobs:
 
       - name: 'Set environmental variables'
         run: |
-          echo "::set-env name=ENVIRONMENT::${{ github.event.inputs.environment }}"
+          echo "ENVIRONMENT=${{ github.event.inputs.environment }}" >> $GITHUB_ENV
           declare -A variables
           while IFS=": " read variable val
           do
-            echo "::set-env name=$variable::$val"
+            echo "$variable=$val" >> $GITHUB_ENV
           done < $GITHUB_WORKSPACE/config/${{ github.event.inputs.environment }}.yaml
 
       - name: 'Login to Azure ACR'
@@ -214,11 +214,11 @@ jobs:
 
       - name: 'Set environmental variables'
         run: |
-          echo "::set-env name=ENVIRONMENT::${{ github.event.inputs.environment }}"
+          echo "ENVIRONMENT=${{ github.event.inputs.environment }}" >> $GITHUB_ENV
           declare -A variables
           while IFS=": " read variable val
           do
-            echo "::set-env name=$variable::$val"
+            echo "$variable=$val" >> $GITHUB_ENV
           done < $GITHUB_WORKSPACE/config/${{ github.event.inputs.environment }}.yaml
 
       - name: 'Login via Azure CLI'
