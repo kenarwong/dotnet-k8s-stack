@@ -98,7 +98,7 @@ Below are instructions on how to set up a cloud environment for different cloud 
 
 #### Azure
 
-To begin on Azure, you will need a [subscription](https://azure.microsoft.com) and sufficient privileges to create several [service principals](https://docs.microsoft.com/en-us/azure/active-directory/develop/app-objects-and-service-principals#service-principal-object).  The project uses a total of 3 service principals with different roles and responsibilities.  Separating the service principals in this manner satisfies the principle of least privilege.
+To begin on Azure, you will need a [subscription][azure-site] and sufficient privileges to create several [service principals](https://docs.microsoft.com/en-us/azure/active-directory/develop/app-objects-and-service-principals#service-principal-object).  The project uses a total of 3 service principals with different roles and responsibilities.  Separating the service principals in this manner satisfies the principle of least privilege.
 
 1. The first service principal will require a Contributor role to the subscription.  This service principal will only be used to provision infrastructure resources during deployment to Azure.  To create this service principal with Azure CLI:
 ```sh
@@ -155,13 +155,13 @@ git clone https://github.com/<username>/dotnet-k8s-stack.git
 | ACR_NAME                     | The name of the Azure Container Repository.  Only alphanumeric characters allowed.       |
 
 3. Github Actions is configured with `workflow_dispatch`.  See `on.workflow_dispatch` at the top of the [workflow][workflow-yaml] file.  Now you should be able to trigger a deployment from the Actions tab.  When running the workflow, select the appropriate branch and provide an <em>Environment</em> variable.  Acceptable values are the names of the files in the [config folder][config-folder] (e.g. `dev`, `prod`).
-  * Keep in mind that `dev` is configured to uses the Let's Encrypt Staging environment, and `prod` uses production. Refer to [Let's Encrypt Environments](#lets-encrypt-environments) for more information.
+    * **Note** The `dev` is configured to uses the Let's Encrypt Staging environment, and `prod` uses production. Refer to [Let's Encrypt Environments](#lets-encrypt-environments) for more information.
 
 
 4. NGINX Ingress uses an Azure Public IP and Azure DNS to receive traffic. So, you will have to set your public domain to use Azure domain name servers. In the completed workflow, navigate through the logs to the `terraform output` step in the `infrastructure` job.  Here terraform will output the Azure domain name servers that were created.  Set the name servers of your public domain to use these domain servers.
 
 ### Let's Encrypt Environments
-Let's Encrypt [rate limits](https://letsencrypt.org/docs/rate-limits/) its production certificates, so it's not advisable to repeatedly deploy production code because it will attempt to re-issue production certificates. You'll most likely encounter an error after requesting too many certificate and will have to wait a week before you can request another. During development, use the `dev` configuration which uses the Let's Encrypt Staging environment. The Staging environment has much higher rate limits, but issues a dummy certificate that isn't actually issued from a trusted authority. You can still navigate to your domain, but you will have to manually accept the certificates in your browser for both the domain and the api virtual host for the site to work. (The application makes calls to the standalone api virtual host for some of its features.) For example, if your domain is `domain.com` you will have to manually navigate to `domain.com` and `api.domain.com` in your browser and accept each certificate.
+Let's Encrypt [rate limits][lets-encrypt-rate-limits] its production certificates, so it's not advisable to repeatedly deploy production code because it will attempt to re-issue production certificates. You'll most likely encounter an error after requesting too many certificate and will have to wait a week before you can request another. During development, use the `dev` configuration which uses the [Let's Encrypt Staging environment][lets-encrypt-staging-environment]. The Staging environment has much higher rate limits, but issues a dummy certificate that isn't actually issued from a trusted authority. You can still navigate to your domain, but you will have to manually accept the certificates in your browser for both the domain and the api virtual host for the site to work. (The application makes calls to the standalone api virtual host for some of its features.) For example, if your domain is `domain.com` you will have to manually navigate to `domain.com` and `api.domain.com` in your browser and accept each certificate.
 
 <!-- USAGE EXAMPLES -->
 ## Usage
@@ -242,3 +242,6 @@ Project Link: [https://github.com/kenarwong/dotnet-k8s-stack](https://github.com
 [infrastructure-diagram]: doc/diagrams/infrastructure.jpg
 [config-folder]: config
 [workflow-yaml]: .github/workflows/main.yaml
+[azure-site]: https://azure.microsoft.com
+[lets-encrypt-rate-limits]: https://letsencrypt.org/docs/rate-limits
+[lets-encrypt-staging-environment]: https://letsencrypt.org/docs/staging-environment
