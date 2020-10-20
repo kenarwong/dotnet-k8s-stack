@@ -155,6 +155,8 @@ git clone https://github.com/<username>/dotnet-k8s-stack.git
 
 3. Github Actions is configured with `workflow_dispatch`.  See `on.workflow_dispatch` at the top of the [workflow][workflow-yaml] file.  Now you should be able to trigger a deployment from the Actions tab.  When running the workflow, select the appropriate branch and provide an <em>Environment</em> variable.  Acceptable values are the names of the files in the [config folder][config-folder] (e.g. `dev`, `prod`).
 
+4. The NGINX Ingress uses an Azure Public IP and Azure DNS to receive traffic. So, you will have to set your public domain to use Azure domain name servers. In the completed workflow, navigate through the logs to the `terraform output` step in the `infrastructure` job.  Here terraform will output the Azure domain name servers that were created.  Set the name servers of your public domain to use these domain servers.
+
 <!-- USAGE EXAMPLES -->
 ## Usage
 
