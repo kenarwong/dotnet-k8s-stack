@@ -1,4 +1,5 @@
 environment: %%ENVIRONMENT%%
+githubUrl: %%GITHUB_URL%%
 
 nginx-ingress:
   controller:

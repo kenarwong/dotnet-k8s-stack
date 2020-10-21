@@ -1,6 +1,9 @@
-<h1>Api Info</h1>
-<p *ngIf="!apiInfo"><em>Loading...</em></p>
-<div *ngIf="apiInfo">
-    <p>Api Environment: {{ apiInfo.apiEnvironment }}</p>
-    <p>Hostname: {{ apiInfo.hostname }}</p>
+<div>
+    <h2>Showcase 3: Backend API</h2>
+    <p>The backend API is also scaled and load-balanced across multiple pods, and is standalone and publicly accessible. Here we demonstrate that the frontend application is making an API call for the API's environment and hostname, which will change if you refresh the page (and disable cache). Alternatively, you can go to the URL directly to see it for yourself: <a href="{{ apiInfoUrl }}">{{ apiInfoUrl }}</a>.</p>
+    <p *ngIf="!apiInfo"><em>Loading...</em></p>
+    <div *ngIf="apiInfo">
+        <p>API Environment: {{ apiInfo.apiEnvironment }}</p>
+        <p>API Hostname: {{ apiInfo.hostname }}</p>
+    </div>
 </div>

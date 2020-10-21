@@ -40,6 +40,8 @@ spec:
           env:
             - name: APP_ENVIRONMENT
               value: {{ .Values.environment }}
+            - name: GITHUB_URL
+              value: {{ .Values.githubUrl }}
           envFrom:
             - configMapRef:
                 name: {{ .Values.app.configMap.name }}
