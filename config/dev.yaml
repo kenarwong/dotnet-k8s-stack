@@ -1,3 +1,4 @@
+GITHUB_URL: https://github.com/kenarwong/dotnet-k8s-stack
 PROVIDER: azure
 LOCATION: eastus
 TERRAFORM_BACKEND_GROUP_NAME: k-eco-terraform

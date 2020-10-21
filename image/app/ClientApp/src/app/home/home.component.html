@@ -1,2 +1,11 @@
-<h1>Hello, world!</h1>
-<p>Welcome to the {{ appEnvironment }} environment on {{ hostname }}.</p>
+<div>
+    <h1>Hello, world!</h1>
+    <p>Welcome to the dotnet-k8s-stack (<a href="{{ githubUrl }}">github</a>)!</p>
+    <p>Each of the pages on the upper menu will demonstrate the capabilities of Kubernetes and provide an example to how to implement a 3-tier application consisting of a frontend SPA, backend API, and database. This application uses Angular, .NET Core, and Microsoft SQL, but other stacks are just as possible because of the containerization nature of the entire application.</p>
+    <p>This current implementation is deployed to Azure Cloud and Kubernetes is managed with Azure Kubernetes Service (AKS). However, with Infrastructure-as-Code (Terraform) we can deploy this Kubernetes stack to other cloud providers as well. The goal of this project is to show how Kubernetes allows for cloud-agnostic implementations.</p>
+</div>
+<div>
+    <h2>Showcase 1: Scaled Applications and Load Balancing</h2>
+    <p>Here we will demonstrate that there are multiple instances of this application deployed as multiple Kubernetes pods. If you refresh the page (and disable cache) you will see that the hostname will change.</p>
+    <p>Hostname: {{ hostname }}</p>
+</div>

@@ -1,21 +1,26 @@
-<h1>Product</h1>
-<p *ngIf="!products"><em>Loading...</em></p>
+<div>
+  <h2>Showcase 5: Retrieving SQL Data</h2>
+  <p>This example finally demonstrates retrieving data from a SQL server. This data is a backup of the popular AdventureWorks database, which is loaded from a backup and stored on persistent storage in the cloud. So, if something were to go wrong to cause the pods to go down the data is not lost.</p>
+  <p>Keep in mind that the frontend is still making a call to the backend API, and only the API communicates with the SQL database to retrieve the data. There is a Kubernetes network policy (set-up with Calico) that only allows ingress traffic from API pods to the SQL pod.</p>
 
-<table class='table table-striped' aria-labelledby="tableLabel" *ngIf="products">
-  <thead>
-    <tr>
-      <th>ID</th>
-      <th>Name</th>
-      <th>Number</th>
-      <th>List Price</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let product of products">
-      <td>{{ product.productId }}</td>
-      <td>{{ product.name }}</td>
-      <td>{{ product.productNumber }}</td>
-      <td>{{ product.listPrice }}</td>
-    </tr>
-  </tbody>
-</table>
+  <p *ngIf="!products"><em>Loading...</em></p>
+
+  <table class='table table-striped' aria-labelledby="tableLabel" *ngIf="products">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Number</th>
+        <th>List Price</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let product of products">
+        <td>{{ product.productId }}</td>
+        <td>{{ product.name }}</td>
+        <td>{{ product.productNumber }}</td>
+        <td>{{ product.listPrice }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

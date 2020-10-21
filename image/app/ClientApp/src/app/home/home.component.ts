@@ -7,14 +7,14 @@ import { EnvService } from '../service/env.service';
   templateUrl: './home.component.html',
 })
 export class HomeComponent {
-  public appEnvironment: string;
   public hostname: string;
+  public githubUrl: string;
   
   constructor(
     private env: EnvService
   ) {
-    this.appEnvironment = env.appEnvironment;
     this.hostname = env.hostname;
+    this.githubUrl = env.githubUrl;
   }
 
 }

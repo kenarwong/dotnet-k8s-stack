@@ -10,11 +10,13 @@ import { ApiInfo } from '../model/apiInfo';
 })
 export class ApiInfoComponent {
   public apiInfo: ApiInfo;
+  public apiInfoUrl: string;
 
   constructor(
     http: HttpClient,
     private env: EnvService
   ) {
+    this.apiInfoUrl = env.apiUrl + 'info';
     http.get<ApiInfo>(env.apiUrl + 'info').subscribe(result => {
       this.apiInfo = result;
     }, error => console.error(error));
