@@ -61,6 +61,11 @@ resource "azurerm_kubernetes_cluster" "aks" {
     vnet_subnet_id  = azurerm_subnet.subnet.id
   }
 
+
+  role_based_access_control {
+    enabled = true
+  }
+
   service_principal {
     client_id     = var.aks_sp_client_id
     client_secret = var.aks_sp_client_secret
@@ -69,6 +74,10 @@ resource "azurerm_kubernetes_cluster" "aks" {
   network_profile {
     network_plugin = "azure"
     network_policy = "calico"
+    load_balancer_sku = "Standard"
+    load_balancer_profile {
+      outbound_ip_address_ids = [ var.public_ip_id ]
+    }
   }
 
   addon_profile {
