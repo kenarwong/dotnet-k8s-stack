@@ -148,56 +148,56 @@ jobs:
           echo "::set-output name=acr_login_server::"$ACR_LOGIN_SERVER""
           echo "::set-output name=aks_cluster_group::"$AKS_CLUSTER_GROUP""
 
-  image:
-    needs: [infrastructure]
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./image
-    steps:
-      - uses: actions/checkout@v2
+  #image:
+  #  needs: [infrastructure]
+  #  runs-on: ubuntu-latest
+  #  defaults:
+  #    run:
+  #      working-directory: ./image
+  #  steps:
+  #    - uses: actions/checkout@v2
 
-      - name: 'Set environmental variables'
-        run: |
-          echo "ENVIRONMENT=${{ github.event.inputs.environment }}" >> $GITHUB_ENV
-          declare -A variables
-          while IFS=": " read variable val
-          do
-            echo "$variable=$val" >> $GITHUB_ENV
-          done < $GITHUB_WORKSPACE/config/${{ github.event.inputs.environment }}.yaml
+  #    - name: 'Set environmental variables'
+  #      run: |
+  #        echo "ENVIRONMENT=${{ github.event.inputs.environment }}" >> $GITHUB_ENV
+  #        declare -A variables
+  #        while IFS=": " read variable val
+  #        do
+  #          echo "$variable=$val" >> $GITHUB_ENV
+  #        done < $GITHUB_WORKSPACE/config/${{ github.event.inputs.environment }}.yaml
 
-      - name: 'Login to Azure ACR'
-        id: acr-login
-        run: |
-           echo "$ARM_CLIENT_SECRET" | docker login "${{ needs.infrastructure.outputs.acr_login_server }}" --username $ARM_CLIENT_ID --password-stdin
+  #    - name: 'Login to Azure ACR'
+  #      id: acr-login
+  #      run: |
+  #         echo "$ARM_CLIENT_SECRET" | docker login "${{ needs.infrastructure.outputs.acr_login_server }}" --username $ARM_CLIENT_ID --password-stdin
 
-      - name: 'Get backup'
-        id: get-backup
-        run: |
-          cd sql
-          chmod +x run-to-get-bak.sh
-          ./run-to-get-bak.sh 
+  #    - name: 'Get backup'
+  #      id: get-backup
+  #      run: |
+  #        cd sql
+  #        chmod +x run-to-get-bak.sh
+  #        ./run-to-get-bak.sh 
 
-      - name: 'Build sql image'
-        id: build-sql-image
-        run: |
-          cd sql
-          docker build . -t ${{ needs.infrastructure.outputs.acr_login_server }}/$SQL_IMAGE_NAME:$SQL_IMAGE_VERSION
-          docker push ${{ needs.infrastructure.outputs.acr_login_server }}/$SQL_IMAGE_NAME:$SQL_IMAGE_VERSION
+  #    - name: 'Build sql image'
+  #      id: build-sql-image
+  #      run: |
+  #        cd sql
+  #        docker build . -t ${{ needs.infrastructure.outputs.acr_login_server }}/$SQL_IMAGE_NAME:$SQL_IMAGE_VERSION
+  #        docker push ${{ needs.infrastructure.outputs.acr_login_server }}/$SQL_IMAGE_NAME:$SQL_IMAGE_VERSION
 
-      - name: 'Build api image'
-        id: build-api-image
-        run: |
-          cd api
-          docker build . -t ${{ needs.infrastructure.outputs.acr_login_server }}/$API_IMAGE_NAME:$API_IMAGE_VERSION
-          docker push ${{ needs.infrastructure.outputs.acr_login_server }}/$API_IMAGE_NAME:$API_IMAGE_VERSION
+  #    - name: 'Build api image'
+  #      id: build-api-image
+  #      run: |
+  #        cd api
+  #        docker build . -t ${{ needs.infrastructure.outputs.acr_login_server }}/$API_IMAGE_NAME:$API_IMAGE_VERSION
+  #        docker push ${{ needs.infrastructure.outputs.acr_login_server }}/$API_IMAGE_NAME:$API_IMAGE_VERSION
 
-      - name: 'Build app image'
-        id: build-app-image
-        run: |
-          cd app
-          docker build . -t ${{ needs.infrastructure.outputs.acr_login_server }}/$APP_IMAGE_NAME:$APP_IMAGE_VERSION
-          docker push ${{ needs.infrastructure.outputs.acr_login_server }}/$APP_IMAGE_NAME:$APP_IMAGE_VERSION
+  #    - name: 'Build app image'
+  #      id: build-app-image
+  #      run: |
+  #        cd app
+  #        docker build . -t ${{ needs.infrastructure.outputs.acr_login_server }}/$APP_IMAGE_NAME:$APP_IMAGE_VERSION
+  #        docker push ${{ needs.infrastructure.outputs.acr_login_server }}/$APP_IMAGE_NAME:$APP_IMAGE_VERSION
 
   #orchestration:
   #  needs: [image, infrastructure]
