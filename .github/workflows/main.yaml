@@ -199,73 +199,78 @@ jobs:
           docker build . -t ${{ needs.infrastructure.outputs.acr_login_server }}/$APP_IMAGE_NAME:$APP_IMAGE_VERSION
           docker push ${{ needs.infrastructure.outputs.acr_login_server }}/$APP_IMAGE_NAME:$APP_IMAGE_VERSION
 
-  orchestration:
-    needs: [image, infrastructure]
-    runs-on: ubuntu-latest
-    env:
-      HELM_VARIABLES_FILE: "vars.yaml"
-      HELM_TEMPLATE_FILE: "values-template.yaml"
-      HELM_VALUES_FILE: "values.yaml"
-    defaults:
-      run:
-        working-directory: ./orchestration
-    steps:
-      - uses: actions/checkout@v2
+  #orchestration:
+  #  needs: [image, infrastructure]
+  #  runs-on: ubuntu-latest
+  #  env:
+  #    HELM_VARIABLES_FILE: "vars.yaml"
+  #    HELM_TEMPLATE_FILE: "values-template.yaml"
+  #    HELM_VALUES_FILE: "values.yaml"
+  #  defaults:
+  #    run:
+  #      working-directory: ./orchestration
+  #  steps:
+  #    - uses: actions/checkout@v2
 
-      - name: 'Set environmental variables'
-        run: |
-          echo "ENVIRONMENT=${{ github.event.inputs.environment }}" >> $GITHUB_ENV
-          declare -A variables
-          while IFS=": " read variable val
-          do
-            echo "$variable=$val" >> $GITHUB_ENV
-          done < $GITHUB_WORKSPACE/config/${{ github.event.inputs.environment }}.yaml
+  #    - name: 'Set environmental variables'
+  #      run: |
+  #        echo "ENVIRONMENT=${{ github.event.inputs.environment }}" >> $GITHUB_ENV
+  #        declare -A variables
+  #        while IFS=": " read variable val
+  #        do
+  #          echo "$variable=$val" >> $GITHUB_ENV
+  #        done < $GITHUB_WORKSPACE/config/${{ github.event.inputs.environment }}.yaml
 
-      - name: 'Login via Azure CLI'
-        uses: azure/login@v1
-        with:
-          creds: ${{ secrets.AZURE_CREDENTIALS }}
-      
-      - name: 'Get AKS credentials'
-        id: get-aks-credentials
-        run: |
-            az aks get-credentials -g $GROUP_NAME -n $CLUSTER_NAME --overwrite
+  #    - name: 'Login via Azure CLI'
+  #      uses: azure/login@v1
+  #      with:
+  #        creds: ${{ secrets.AZURE_CREDENTIALS }}
+  #    
+  #    - name: 'Get AKS credentials'
+  #      id: get-aks-credentials
+  #      run: |
+  #          az aks get-credentials -g $GROUP_NAME -n $CLUSTER_NAME --overwrite
 
-      - name: 'Replace Helm tokens'
-        id: replace-helm-tokens
-        run: |
-          cat <<EOF > $HELM_VARIABLES_FILE
-            ENVIRONMENT: $ENVIRONMENT
-            GITHUB_URL: $GITHUB_URL
-            CLUSTER_NAME: $CLUSTER_NAME
-            IP_ADDRESS: ${{ needs.infrastructure.outputs.ip_address }}
-            DOMAIN_NAME: $DOMAIN_NAME
-            CERT_ACME_SERVER: $CERT_ACME_SERVER
-            CERT_REGISTRATION_EMAIL: $CERT_REGISTRATION_EMAIL
-            CERT_MANAGER_CLIENT_ID: $CERT_MANAGER_CLIENT_ID
-            CERT_MANAGER_CLIENT_SECRET: $(echo -n "$CERT_MANAGER_CLIENT_SECRET" | base64)
-            AZURE_TENANT_ID: $AZURE_TENANT_ID
-            AZURE_SUBSCRIPTION_ID: $AZURE_SUBSCRIPTION_ID
-            AZURE_DNS_ZONE_RESOURCE_GROUP: $GROUP_NAME 
-            AZURE_IP_ADDRESS_RESOURCE_GROUP: $GROUP_NAME
-            ACR_LOGIN_SERVER: ${{ needs.infrastructure.outputs.acr_login_server }}
-            SQL_IMAGE_NAME: $SQL_IMAGE_NAME
-            SQL_IMAGE_VERSION: $SQL_IMAGE_VERSION
-            API_IMAGE_NAME: $API_IMAGE_NAME
-            API_IMAGE_VERSION: $API_IMAGE_VERSION
-            APP_IMAGE_NAME: $APP_IMAGE_NAME
-            APP_IMAGE_VERSION: $APP_IMAGE_VERSION
-          EOF
+  #    - name: 'Replace Helm tokens'
+  #      id: replace-helm-tokens
+  #      run: |
+  #        cat <<EOF > $HELM_VARIABLES_FILE
+  #          ENVIRONMENT: $ENVIRONMENT
+  #          GITHUB_URL: $GITHUB_URL
+  #          CLUSTER_NAME: $CLUSTER_NAME
+  #          IP_ADDRESS: ${{ needs.infrastructure.outputs.ip_address }}
+  #          DOMAIN_NAME: $DOMAIN_NAME
+  #          CERT_ACME_SERVER: $CERT_ACME_SERVER
+  #          CERT_REGISTRATION_EMAIL: $CERT_REGISTRATION_EMAIL
+  #          CERT_MANAGER_CLIENT_ID: $CERT_MANAGER_CLIENT_ID
+  #          CERT_MANAGER_CLIENT_SECRET: $(echo -n "$CERT_MANAGER_CLIENT_SECRET" | base64)
+  #          AZURE_TENANT_ID: $AZURE_TENANT_ID
+  #          AZURE_SUBSCRIPTION_ID: $AZURE_SUBSCRIPTION_ID
+  #          AZURE_DNS_ZONE_RESOURCE_GROUP: $GROUP_NAME 
+  #          AZURE_IP_ADDRESS_RESOURCE_GROUP: $GROUP_NAME
+  #          ACR_LOGIN_SERVER: ${{ needs.infrastructure.outputs.acr_login_server }}
+  #          SQL_IMAGE_NAME: $SQL_IMAGE_NAME
+  #          SQL_IMAGE_VERSION: $SQL_IMAGE_VERSION
+  #          API_IMAGE_NAME: $API_IMAGE_NAME
+  #          API_IMAGE_VERSION: $API_IMAGE_VERSION
+  #          APP_IMAGE_NAME: $APP_IMAGE_NAME
+  #          APP_IMAGE_VERSION: $APP_IMAGE_VERSION
+  #        EOF
 
-          chmod +x replace-helm-tokens.sh
-          ./replace-helm-tokens.sh -f $HELM_VARIABLES_FILE --template-file $HELM_TEMPLATE_FILE --output-file $HELM_VALUES_FILE
+  #        chmod +x replace-helm-tokens.sh
+  #        ./replace-helm-tokens.sh -f $HELM_VARIABLES_FILE --template-file $HELM_TEMPLATE_FILE --output-file $HELM_VALUES_FILE
 
-      - name: 'helm dependency update'
-        id: helm-dependency-update
-        run: |
-          helm dependency update
+  #    - name: 'helm repo update'
+  #      id: helm-repo-update
+  #      run: |
+  #        helm repo update
 
-      - name: 'helm install'
-        id: helm-install
-        run: |
-          helm upgrade -i -f $HELM_VALUES_FILE $HELM_INSTALL_NAME --create-namespace -n $ENVIRONMENT --atomic .
+  #    - name: 'helm dependency update'
+  #      id: helm-dependency-update
+  #      run: |
+  #        helm dependency update
+
+  #    - name: 'helm install'
+  #      id: helm-install
+  #      run: |
+  #        helm upgrade -i -f $HELM_VALUES_FILE $HELM_INSTALL_NAME --create-namespace -n $ENVIRONMENT --atomic .
