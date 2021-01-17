@@ -52,6 +52,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
   resource_group_name = var.resource_group_name
   location            = var.location
   dns_prefix          = "${var.cluster_name}-${var.resource_group_name}"
+  kubernetes_version  = "1.19.6"
 
   default_node_pool {
     name            = "default"
@@ -66,17 +67,17 @@ resource "azurerm_kubernetes_cluster" "aks" {
   }
 
   network_profile {
-    network_plugin = "kubenet"
+    network_plugin = "azure"
     network_policy = "calico"
-    #load_balancer_sku = "Standard"
-    #load_balancer_profile {
-    #  outbound_ip_address_ids = [ var.public_ip_id ]
-    #}
   }
 
   addon_profile {
+    oms_agent {
+      enabled = false
+    }
+
     kube_dashboard {
-      enabled = true
+      enabled = false
     }
   }
 
