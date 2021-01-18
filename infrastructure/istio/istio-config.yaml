@@ -11,15 +11,6 @@ spec:
   components:
     cni:
       enabled: true
-  addonComponents:
-    grafana:
-      enabled: true
-    prometheus:
-      enabled: true
-    tracing:
-      enabled: true
-    kiali:
-      enabled: true
   values:
     cni:
       excludeNamespaces:
