@@ -152,13 +152,20 @@ jobs:
           echo $(terraform output kube_config) > kubeconfig
           kubectl --kubeconfig kubeconfig create ns istio-system
 
+      - name: 'Login via Azure CLI'
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+      
+      - name: 'Get AKS credentials'
+        id: get-aks-credentials
+        run: |
+            az aks get-credentials -g $GROUP_NAME -n $(terraform output cluster_name) --overwrite
+
       - name: 'istio'
         id: istio
         run: |
-          #mkdir .kube
-          #echo $KUBE_CONFIG > ~/.kube/config
-          #echo ~/.kube/config
-          #kubectl create ns istio-system
+          kubectl create ns istio-system
           #helm repo add istio.io https://storage.googleapis.com/istio-release/releases/$ISTIO_VERSION/charts/
           #helm template install/kubernetes/helm/istio-cni --name=istio-cni --namespace=istio-system \ 
           #--set excludeNamespaces={"istio-system,kube-system"} | kubectl apply -f -
