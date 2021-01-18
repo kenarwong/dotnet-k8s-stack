@@ -149,7 +149,7 @@ jobs:
           echo "::set-output name=ip_address::"$IP_ADDRESS""
           echo "::set-output name=acr_login_server::"$ACR_LOGIN_SERVER""
           echo "::set-output name=aks_cluster_group::"$AKS_CLUSTER_GROUP""
-          echo "::set-env name=KUBE_CONFIG::$KUBE_CONFIG"
+          echo "::set-env name=KUBE_CONFIG::"$KUBE_CONFIG""
 
       - name: 'istio'
         id: istio
