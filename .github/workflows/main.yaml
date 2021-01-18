@@ -148,7 +148,7 @@ jobs:
           echo "::set-output name=ip_address::"$IP_ADDRESS""
           echo "::set-output name=acr_login_server::"$ACR_LOGIN_SERVER""
           echo "::set-output name=aks_cluster_group::"$AKS_CLUSTER_GROUP""
-          #echo "KUBE_CONFIG="$(terraform output kube_config)"" >> $GITHUB_ENV
+          echo "CLUSTER_NAME="$(terraform output cluster_name)"" >> $GITHUB_ENV
 
       - name: 'Login via Azure CLI'
         uses: azure/login@v1
@@ -158,7 +158,7 @@ jobs:
       - name: 'Get AKS credentials'
         id: get-aks-credentials
         run: |
-            az aks get-credentials -g $GROUP_NAME -n $(terraform output cluster_name) --overwrite
+            az aks get-credentials -g $GROUP_NAME -n $CLUSTER_NAME --overwrite
 
       - name: 'istio'
         id: istio
