@@ -56,6 +56,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       TFVARS_FILE: "workflow.tfvars"
+      ISTIO_VERSION: "1.8.2"
     outputs:
       ip_address: ${{ steps.output.outputs.ip_address }}
       acr_login_server: ${{ steps.output.outputs.acr_login_server }}
@@ -147,6 +148,16 @@ jobs:
           echo "::set-output name=ip_address::"$IP_ADDRESS""
           echo "::set-output name=acr_login_server::"$ACR_LOGIN_SERVER""
           echo "::set-output name=aks_cluster_group::"$AKS_CLUSTER_GROUP""
+          echo $(terraform output kube_config) > .kube/config
+
+      - name: 'istio'
+        id: istio
+        run: |
+          kubectl create ns istio-system
+          helm repo add istio.io https://storage.googleapis.com/istio-release/releases/$ISTIO_VERSION/charts/
+          helm template install/kubernetes/helm/istio-cni --name=istio-cni --namespace=istio-system \ 
+          --set excludeNamespaces={"istio-system,kube-system"} | kubectl apply -f -
+          helm template install/kubernetes/helm/istio --name istio --namespace istio-system --set istio_cni.enabled=true | kubectl apply -f -
 
   #image:
   #  needs: [infrastructure]
