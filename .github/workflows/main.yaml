@@ -148,6 +148,7 @@ jobs:
           echo "::set-output name=ip_address::"$IP_ADDRESS""
           echo "::set-output name=acr_login_server::"$ACR_LOGIN_SERVER""
           echo "::set-output name=aks_cluster_group::"$AKS_CLUSTER_GROUP""
+          mkdir .kube
           echo $(terraform output kube_config) > .kube/config
 
       - name: 'istio'
