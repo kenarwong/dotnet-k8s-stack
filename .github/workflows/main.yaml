@@ -164,7 +164,7 @@ jobs:
         run: |
           curl -L https://git.io/getLatestIstio | sh -
           istio-$ISTIO_VERSION/bin/istioctl install -y -f $GITHUB_WORKSPACE/infrastructure/istio/istio-config.yaml
-          kubectl apply -f istio-$ISTIO_VERISON/samples/addons
+          kubectl apply -f istio-$ISTIO_VERSION/samples/addons
           
   #image:
   #  needs: [infrastructure]
