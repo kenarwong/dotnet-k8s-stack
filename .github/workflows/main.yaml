@@ -145,11 +145,10 @@ jobs:
           IP_ADDRESS="$(terraform output ip_address)"
           ACR_LOGIN_SERVER="$(terraform output acr_login_server)"
           AKS_CLUSTER_GROUP="$(terraform output aks_cluster_group)"
-          KUBE_CONFIG="$(terraform output kube_config)"
           echo "::set-output name=ip_address::"$IP_ADDRESS""
           echo "::set-output name=acr_login_server::"$ACR_LOGIN_SERVER""
           echo "::set-output name=aks_cluster_group::"$AKS_CLUSTER_GROUP""
-          echo "::set-env name=KUBE_CONFIG::"$KUBE_CONFIG""
+          echo "KUBE_CONFIG="$(terraform output kube_config)"" >> $GITHUB_ENV
 
       - name: 'istio'
         id: istio
