@@ -162,11 +162,20 @@ jobs:
       - name: 'istio'
         id: istio
         run: |
+          curl -L https://git.io/getLatestIstio | sh -
           kubectl create ns istio-system
-          helm repo add istio.io https://storage.googleapis.com/istio-release/releases/$ISTIO_VERSION/charts/
-          helm template install/kubernetes/helm/istio-cni --name=istio-cni --namespace=istio-system \ 
+          #helm repo add istio.io https://storage.googleapis.com/istio-release/releases/1.1.9/charts/
+          helm install -n istio-system istio-base manifests/charts/base
+          helm install --namespace istio-system istio-cni manifests/charts/istio-cni \ 
             --set excludeNamespaces={"istio-system,kube-system"} | kubectl apply -f -
-          helm template install/kubernetes/helm/istio --name istio --namespace istio-system --set istio_cni.enabled=true | kubectl apply -f -
+          helm install --namespace istio-system istiod manifests/charts/istio-control/istio-discovery \
+            --set global.hub="docker.io/istio" --set global.tag="$ISTIO_VERISON"
+          helm install --namespace istio-system istio-ingress manifests/charts/gateways/istio-ingress \
+            --set global.hub="docker.io/istio" --set global.tag="$ISTIO_VERSION"
+          helm install --namespace istio-system istio-egress manifests/charts/gateways/istio-egress \
+            --set global.hub="docker.io/istio" --set global.tag="$ISTIO_VERSION"
+
+            #helm template install/kubernetes/helm/istio --name istio --namespace istio-system --set istio_cni.enabled=true | kubectl apply -f -
 
   #image:
   #  needs: [infrastructure]
