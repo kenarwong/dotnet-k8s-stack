@@ -163,10 +163,10 @@ jobs:
         id: istio
         run: |
           kubectl create ns istio-system
-          #helm repo add istio.io https://storage.googleapis.com/istio-release/releases/$ISTIO_VERSION/charts/
-          #helm template install/kubernetes/helm/istio-cni --name=istio-cni --namespace=istio-system \ 
-          #--set excludeNamespaces={"istio-system,kube-system"} | kubectl apply -f -
-          #helm template install/kubernetes/helm/istio --name istio --namespace istio-system --set istio_cni.enabled=true | kubectl apply -f -
+          helm repo add istio.io https://storage.googleapis.com/istio-release/releases/$ISTIO_VERSION/charts/
+          helm template install/kubernetes/helm/istio-cni --name=istio-cni --namespace=istio-system \ 
+            --set excludeNamespaces={"istio-system,kube-system"} | kubectl apply -f -
+          helm template install/kubernetes/helm/istio --name istio --namespace istio-system --set istio_cni.enabled=true | kubectl apply -f -
 
   #image:
   #  needs: [infrastructure]
