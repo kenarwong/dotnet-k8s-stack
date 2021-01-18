@@ -21,3 +21,6 @@ spec:
       # Ensure that the Istio pods are only scheduled to run on Linux nodes
       defaultNodeSelector:
         beta.kubernetes.io/os: linux
+    gateways:
+      istio-ingressgateway:
+        loadBalancerIP: 40.88.211.93
