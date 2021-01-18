@@ -8,6 +8,9 @@ spec:
   # More details at: https://istio.io/docs/setup/additional-setup/config-profiles/
   profile: default
   # Enable the addons that we will want to use
+  components:
+    cni:
+      enabled: true
   addonComponents:
     grafana:
       enabled: true
@@ -17,10 +20,8 @@ spec:
       enabled: true
     kiali:
       enabled: true
-    components:
-      cni:
-        enabled: true
   values:
+    logLevel: info
     global:
       # Ensure that the Istio pods are only scheduled to run on Linux nodes
       defaultNodeSelector:
