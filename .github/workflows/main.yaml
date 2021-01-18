@@ -145,19 +145,22 @@ jobs:
           IP_ADDRESS="$(terraform output ip_address)"
           ACR_LOGIN_SERVER="$(terraform output acr_login_server)"
           AKS_CLUSTER_GROUP="$(terraform output aks_cluster_group)"
+          KUBE_CONFIG="$(terraform output kube_config)"
           echo "::set-output name=ip_address::"$IP_ADDRESS""
           echo "::set-output name=acr_login_server::"$ACR_LOGIN_SERVER""
           echo "::set-output name=aks_cluster_group::"$AKS_CLUSTER_GROUP""
-          echo $(terraform output kube_config)
+          echo "::set-env name=KUBE_CONFIG::$KUBE_CONFIG"
 
-      #- name: 'istio'
-      #  id: istio
-      #  run: |
-      #    kubectl --kubeconfig .kube/config create ns istio-system
-      #    helm repo add istio.io https://storage.googleapis.com/istio-release/releases/$ISTIO_VERSION/charts/
-      #    helm template install/kubernetes/helm/istio-cni --name=istio-cni --namespace=istio-system \ 
-      #    --set excludeNamespaces={"istio-system,kube-system"} | kubectl apply -f -
-      #    helm template install/kubernetes/helm/istio --name istio --namespace istio-system --set istio_cni.enabled=true | kubectl apply -f -
+      - name: 'istio'
+        id: istio
+        run: |
+          mkdir .kube
+          echo $KUBE_CONFIG > .kube/config
+          kubectl --kubeconfig .kube/config create ns istio-system
+          helm repo add istio.io https://storage.googleapis.com/istio-release/releases/$ISTIO_VERSION/charts/
+          helm --kubeconfig .kube/config template install/kubernetes/helm/istio-cni --name=istio-cni --namespace=istio-system \ 
+          --set excludeNamespaces={"istio-system,kube-system"} | kubectl apply -f -
+          helm --kubeconfig .kube/config template install/kubernetes/helm/istio --name istio --namespace istio-system --set istio_cni.enabled=true | kubectl apply -f -
 
   #image:
   #  needs: [infrastructure]
