@@ -148,8 +148,6 @@ jobs:
           echo "::set-output name=ip_address::"$IP_ADDRESS""
           echo "::set-output name=acr_login_server::"$ACR_LOGIN_SERVER""
           echo "::set-output name=aks_cluster_group::"$AKS_CLUSTER_GROUP""
-          echo "GROUP_NAME="$(terraform output resource_group_name)"" >> $GITHUB_ENV
-          echo "CLUSTER_NAME="$(terraform output cluster_name)"" >> $GITHUB_ENV
 
       - name: 'Login via Azure CLI'
         uses: azure/login@v1
