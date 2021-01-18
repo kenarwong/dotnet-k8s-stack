@@ -149,10 +149,8 @@ jobs:
           echo "::set-output name=acr_login_server::"$ACR_LOGIN_SERVER""
           echo "::set-output name=aks_cluster_group::"$AKS_CLUSTER_GROUP""
           #echo "KUBE_CONFIG="$(terraform output kube_config)"" >> $GITHUB_ENV
-          mkdir .kube
-          echo $(terraform output kube_config) > ~/.kube/config
-          echo ~/.kube/config
-          kubectl create ns istio-system
+          echo $(terraform output kube_config) > kubeconfig
+          kubectl --kubeconfig kubeconfig create ns istio-system
 
       - name: 'istio'
         id: istio
