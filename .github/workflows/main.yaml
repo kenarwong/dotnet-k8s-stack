@@ -163,7 +163,8 @@ jobs:
         id: istio
         run: |
           curl -L https://git.io/getLatestIstio | sh -
-          kubectl create ns istio-system
+          cd istio-$ISTIO_VERSION
+          kubectl create ns istio-system --dry-run=client -o yaml | kubectl apply -f -
           #helm repo add istio.io https://storage.googleapis.com/istio-release/releases/1.1.9/charts/
           helm install -n istio-system istio-base manifests/charts/base
           helm install --namespace istio-system istio-cni manifests/charts/istio-cni \ 
