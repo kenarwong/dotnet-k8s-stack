@@ -157,11 +157,11 @@ jobs:
       - name: 'Get AKS credentials'
         id: get-aks-credentials
         run: |
-            az aks get-credentials -g $GROUP_NAME -n $CLUSTER_NAME --overwrite
+          az aks get-credentials -g $GROUP_NAME -n $CLUSTER_NAME --overwrite
 
-      #- name: 'istio'
-      #  id: istio
-      #  run: |
+      - name: 'istio'
+        id: istio
+        run: |
           curl -L https://git.io/getLatestIstio | sh -
           istio-$ISTIO_VERSION/bin/istioctl operator init --watchedNamespaces=istio-system,dev,qa
           kubectl create namespace istio-system --dry-run=client -o yaml | kubectl apply -f -
