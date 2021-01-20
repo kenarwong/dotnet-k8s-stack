@@ -1,21 +1,21 @@
 apiVersion: install.istio.io/v1alpha1
 kind: IstioOperator
 metadata:
-  name: ingress-gateway-dev
-  namespace: dev
+  name: ingress-gateway-qa
+  namespace: qa
 spec:
   profile: empty # REQUIRED
   components:
     ingressGateways:
-      - name: ingress-gateway-dev
-        namespace: dev
+      - name: ingress-gateway-qa
+        namespace: qa
         enabled: true
   values:
     gateways:
       istio-ingressgateway:
         serviceAnnotations:
           service.beta.kubernetes.io/azure-load-balancer-internal: "true"
-          #service.beta.kubernetes.io/azure-dns-label-name: k-eco-dev
+          #service.beta.kubernetes.io/azure-dns-label-name: k-eco-qa
           #service.beta.kubernetes.io/azure-load-balancer-resource-group: k-eco-dev
         #loadBalancerIP:
 
